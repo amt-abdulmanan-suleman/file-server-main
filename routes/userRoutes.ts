@@ -6,7 +6,7 @@ import { getAllUsers,getUser,updateUser,deleteUser} from '../controllers/userCon
 
 router.get("/",getAllUsers)
 
-router.get("/:id",getUser).put("/:id",updateUser).delete("/:id",deleteUser)
+router.get("/:id",getUser).patch("/:id",updateUser).delete("/:id",deleteUser)
 
 
 
