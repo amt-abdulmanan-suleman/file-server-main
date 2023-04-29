@@ -5,6 +5,8 @@ import { PORT } from './config';
 
 import authRoutes from './routes/authRoutes'
 import userRoutes from './routes/userRoutes'
+import adminRoutes from './routes/adminRoutes'
+import fileRoutes from './routes/fileRoutes'
 
 const app = express();
 
@@ -16,6 +18,10 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use('/auth',authRoutes);
 
 app.use('/user',userRoutes);
+
+app.use('/admin',adminRoutes);
+
+app.use('/api/files',fileRoutes)
 
 app.listen(PORT,()=>{
     console.log(`Server Running on Port ${PORT}`)
