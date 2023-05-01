@@ -1,7 +1,14 @@
 import { Response, Request } from "express";
+import db from "../db";
 
 export const getAllUsers = async(req:Request,res:Response)=>{
-    res.send('get all users')
+
+    try {
+        const response =await db.query('SELECT * FROM users');
+        res.json(response)
+    } catch (error) {
+      res.json({message:error})  
+    }
 }
 
 export const getUser =async (req:Request,res:Response)=>{
