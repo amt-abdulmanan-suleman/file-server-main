@@ -1,6 +1,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser'
+import passport from 'passport';
+import cors from 'cors'
 
 import { PORT } from './config';
 
@@ -8,6 +10,7 @@ import authRoutes from './routes/authRoutes'
 import userRoutes from './routes/userRoutes'
 import adminRoutes from './routes/adminRoutes'
 import fileRoutes from './routes/fileRoutes'
+import './middlewares/passport-middleware'
 
 const app = express();
 
@@ -17,6 +20,8 @@ app.use(bodyParser.urlencoded({extended:false}));
 
 
 app.use(cookieParser())
+
+app.use(passport.initialize())
 
 app.use('/auth',authRoutes);
 
