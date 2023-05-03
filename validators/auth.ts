@@ -1,8 +1,13 @@
 import {check} from 'express-validator';
+import { Request } from 'express';
 import db from '../db';
 import { compare } from 'bcryptjs';
-
-
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    password: string;
+  }
 const password = check('password').isLength({min:6, max:15}).withMessage('Password has to be between 6 and 15 chars')
 const email = check('email').isEmail().withMessage('Please provide a valid email')
 const emailExists = check('email').custom(async (value)=>{
@@ -26,7 +31,7 @@ const validLoginFields = check('email').custom(async(value,{req})=>{
     if(!validPassword){
         throw new Error("Wrong password")
     }
-    req.user = user.rows[0]
+    req.user = user.rows[0] as User
 })
 
 const register = {
