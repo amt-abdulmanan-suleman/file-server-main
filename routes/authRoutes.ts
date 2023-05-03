@@ -1,10 +1,13 @@
 import express from 'express'
+import registerValidation from '../validators/auth'
 
-const router = express.Router();
 
 import { signUp,logIn } from '../controllers/authControllers';
+import { validationMiddleware } from '../middlewares/validation-middleware';
 
-router.post('/signup',signUp)
+
+const router = express.Router();
+router.post('/signup',registerValidation,validationMiddleware,signUp)
 
 router.post('/login',logIn)
 
