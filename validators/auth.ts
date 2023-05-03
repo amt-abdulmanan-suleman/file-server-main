@@ -1,5 +1,6 @@
 import {check} from 'express-validator';
 import db from '../db';
+import { compare } from 'bcryptjs';
 
 
 const password = check('password').isLength({min:6, max:15}).withMessage('Password has to be between 6 and 15 chars')
@@ -13,6 +14,24 @@ const emailExists = check('email').custom(async (value)=>{
 })
 const name = check('name').isLength({min:10,max:50}).withMessage('Name has to be between 10 and 50 chars long')
 
-const register = {registerValidation:[name,password,email,emailExists]}
 
-export default register.registerValidation
+const validLoginFields = check('email').custom(async(value,{req})=>{
+    const user = await db.query('SELECT * FROM users WHERE email = $1',[value])
+
+    if(!user.rows.length){
+        throw new Error('Email doesnot exists')
+    }
+
+    const validPassword = await compare(req.body.password,user.rows[0].password);
+    if(!validPassword){
+        throw new Error("Wrong password")
+    }
+    req.user = user.rows[0]
+})
+
+const register = {
+    registerValidation:[name,password,email,emailExists],
+    loginValidation:[validLoginFields]
+}
+
+export default register;
