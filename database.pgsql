@@ -6,3 +6,5 @@ CREATE TABLE users(
     password text NOT NULL,
     created_at date DEFAULT CURRENT_DATE
 );
+
+alter table users add column name text;
