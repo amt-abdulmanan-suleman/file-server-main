@@ -4,8 +4,11 @@ import db from "../db";
 export const getAllUsers = async(req:Request,res:Response)=>{
 
     try {
-        const response =await db.query('SELECT * FROM users');
-        res.json(response)
+        const {rows} = await db.query('SELECT id,name,email,created_at FROM users');
+        return res.status(200).json({
+            success:true,
+            users:rows
+        })
     } catch (error) {
       res.json({message:error})  
     }
