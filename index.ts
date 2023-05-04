@@ -10,6 +10,7 @@ import authRoutes from './routes/authRoutes'
 import userRoutes from './routes/userRoutes'
 import adminRoutes from './routes/adminRoutes'
 import fileRoutes from './routes/fileRoutes'
+import emailRoutes from './routes/emailRoutes'
 import './middlewares/passport-middleware'
 
 const app = express();
@@ -30,6 +31,7 @@ app.use('/user',userRoutes);
 app.use('/admin',adminRoutes);
 
 app.use('/api/files',fileRoutes)
+app.use('/',emailRoutes);
 
 app.listen(PORT,()=>{
     console.log(`Server Running on Port ${PORT}`)
