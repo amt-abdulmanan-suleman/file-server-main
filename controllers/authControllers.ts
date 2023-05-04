@@ -3,6 +3,7 @@ import { hash } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 import db from "../db";
 import { SECRET } from "../config";
+import { sendVerificationEmail } from "./emailControllers";
 interface User {
     name: string;
     
@@ -18,12 +19,12 @@ export const signUp = async (req: Request, res: Response) => {
   try {
     const hashedPassword = await hash(password, 10);
 
-    await db.query("insert into users(name,email,password) values ($1, $2, $3)", [
+    const {rows} = await db.query("insert into users(name,email,password) values ($1, $2, $3) returning id,email", [
       name,
       email,
       hashedPassword,
     ]);
-
+    await sendVerificationEmail(rows[0].id,rows[0].email)
     return res.status(201).json({
       success: true,
       message: "Registration Successful",
