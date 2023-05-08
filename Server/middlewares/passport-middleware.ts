@@ -4,10 +4,7 @@ import { Strategy } from "passport-jwt";
 import { SECRET } from "../config";
 import db from "../db";
 
-interface AuthenticatedRequest extends Request {
-    user?: { id: string; email: string; name:string
-        created_at:Date };
-  }
+
 
 const cookieExtractor = (req:Request)=>{
     let token = null
