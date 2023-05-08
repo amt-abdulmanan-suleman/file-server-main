@@ -16,7 +16,19 @@ export const getAllUsers = async(req:Request,res:Response)=>{
 
 export const getUser =async (req:Request,res:Response)=>{
     const {id} = req.params;
-    res.send(`get user with id ${id}`)
+    try {
+        const {rows} = await db.query('select id,name,email,created_at from users where id=$1',[id]);
+        res.status(200).json({
+            success:true,
+            user:rows[0]
+        })
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+          return res.status(500).json({
+            error: error.message,
+          });
+        }
+    }
 }
 
 export const updateUser = async(req:Request,res:Response)=>{
