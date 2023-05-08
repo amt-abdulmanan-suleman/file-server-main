@@ -1,19 +1,14 @@
-import nodemailer from 'nodemailer';
+
 import { randomBytes } from 'crypto';
 import db from '../db';
-import { EMAIL_PWD, EMAIL_USER } from '../config';
+import { transporter } from '../utils/transporter';
+import  {EMAIL_USER}  from '../config';
 
 export async function sendVerificationEmail(userId: number, email: string): Promise<void> {
   const token = randomBytes(16).toString('hex');
   await db.query('INSERT INTO verification_tokens (user_id, email, token) VALUES ($1, $2, $3)', [userId,email, token]);
 
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: EMAIL_USER,
-      pass: EMAIL_PWD,
-    },
-  });
+  
 
   const mailOptions = {
     from: EMAIL_USER,
