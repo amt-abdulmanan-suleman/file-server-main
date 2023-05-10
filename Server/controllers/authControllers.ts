@@ -19,15 +19,16 @@ export const signUp = async (req: Request, res: Response) => {
   try {
     const hashedPassword = await hash(password, 10);
 
-    const {rows} = await db.query("insert into users(name,email,password) values ($1, $2, $3) returning id,email", [
+    const {rows} = await db.query("insert into users(name,email,password,role) values ($1, $2, $3, $4) returning id,email", [
       name,
       email,
       hashedPassword,
+      "user"
     ]);
     await sendVerificationEmail(rows[0].id,rows[0].email)
     return res.status(201).json({
       success: true,
-      message: "Registration Successful",
+      message: "Verification Email sent",
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -60,6 +61,7 @@ export const logIn = async (req: Request, res: Response) => {
       .status(200)
       .cookie("token", token, { httpOnly: true })
       .json({
+        id: user.id,
         success: true,
         message: "Logged In",
       });
