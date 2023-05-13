@@ -1,6 +1,6 @@
 import { Request } from "express";
 import passport from "passport";
-import { Strategy } from "passport-jwt";
+import { Strategy,ExtractJwt } from "passport-jwt";
 import { SECRET } from "../config";
 import db from "../db";
 
@@ -18,18 +18,21 @@ const opts = {
 }
 
 passport.use(
-    new Strategy(opts,async({id},done)=>{
+    new Strategy({
+        jwtFromRequest:ExtractJwt.fromAuthHeaderAsBearerToken(),
+        secretOrKey:SECRET,
+    },async({id},done)=>{
         try {
             const {rows} = await db.query('select * from users where id = $1',[id])
             if(!rows.length){
-                throw new Error('401 Unauthorized User')
+                return done(null,false)
             }
-            let user = {id:rows[0].id,email:rows[0].email,name:rows[0].name}
+            let user = rows[0]
 
-            return done(null,user)
+            return  done(null,user)
         } catch (error) {
             console.log(error)
-            return done(null,false)
+            done(null,false)
         }
     })
 )
