@@ -17,7 +17,7 @@ export const getAllUsers = async(req:Request,res:Response)=>{
 export const getUser =async (req:Request,res:Response)=>{
     const {id} = req.params;
     try {
-        const {rows} = await db.query('select id,name,email,created_at from users where id=$1',[id]);
+        const {rows} = await db.query('select * from users where id=$1',[id]);
         res.status(200).json({
             success:true,
             user:rows[0]
