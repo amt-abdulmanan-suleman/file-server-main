@@ -49,6 +49,7 @@ var verifyForm = document.querySelector('.verify-form');
 var loginDiv = document.querySelector('.container-login');
 var alreadyLoginBtn = document.querySelector('.already-btn-login');
 var alreadyRegBtn = document.querySelector('.already-btn-reg');
+var errorList = document.createElement('ul');
 var LoggedIn = localStorage.getItem('profile');
 if (LoggedIn) {
     window.location.href = 'http://127.0.0.1:5500/client/filesPage.html';
@@ -103,8 +104,33 @@ var loginFunc = function (cred) { return __awaiter(_this, void 0, void 0, functi
         }
     });
 }); };
+function errorDisplay(errArray) {
+    var errorList = errArray.map(function (error) {
+        return "\n          <li>\n            <i class=\"fas fa-times-circle\"></i>\n            <p>".concat(error.msg, "</p>\n          </li>\n        ");
+    }).join('');
+    return errorList;
+}
+var getUser = function (id) { return __awaiter(_this, void 0, void 0, function () {
+    var response, data;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, fetch("http://localhost:3000/user/".concat(id), {
+                    method: 'GET',
+                    headers: {
+                        'Content-type': 'application/json'
+                    }
+                })];
+            case 1:
+                response = _a.sent();
+                return [4 /*yield*/, response.json()];
+            case 2:
+                data = _a.sent();
+                return [2 /*return*/, data];
+        }
+    });
+}); };
 registerBtn.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
-    var user, response, success;
+    var user, response, data, errorList_1, secondChild;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -119,17 +145,23 @@ registerBtn.addEventListener('click', function (e) { return __awaiter(_this, voi
                 response = _a.sent();
                 return [4 /*yield*/, response.json()];
             case 2:
-                success = (_a.sent()).success;
-                if (success) {
+                data = _a.sent();
+                if (data.success) {
                     registerDiv.classList.add('hide');
                     verifyForm.classList.remove('hide');
+                }
+                else {
+                    errorList_1 = document.createElement('ul');
+                    errorList_1.innerHTML = errorDisplay(data.errors);
+                    secondChild = registerDiv.children[1];
+                    registerDiv.insertBefore(errorList_1, secondChild);
                 }
                 return [2 /*return*/];
         }
     });
 }); });
 loginBtn.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
-    var cred, response, data;
+    var cred, response, data, user, info, infoString, secondChild;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -144,12 +176,22 @@ loginBtn.addEventListener('click', function (e) { return __awaiter(_this, void 0
                 return [4 /*yield*/, response.json()];
             case 2:
                 data = _a.sent();
-                console.log(data);
-                if (data.success) {
-                    window.location.href = 'http://127.0.0.1:5500/client/filesPage.html';
-                    localStorage.setItem('profile', data.id);
-                }
-                return [2 /*return*/];
+                if (!data.success) return [3 /*break*/, 4];
+                return [4 /*yield*/, getUser(data.id)];
+            case 3:
+                user = _a.sent();
+                info = { user: user, token: data.token };
+                infoString = JSON.stringify(info);
+                localStorage.setItem('profile', infoString);
+                window.location.href = 'http://127.0.0.1:5500/client/filesPage.html';
+                return [3 /*break*/, 5];
+            case 4:
+                // create a new <ul> element
+                errorList.innerHTML = errorDisplay(data.errors);
+                secondChild = loginDiv.children[1];
+                loginDiv.insertBefore(errorList, secondChild);
+                _a.label = 5;
+            case 5: return [2 /*return*/];
         }
     });
 }); });
@@ -167,7 +209,8 @@ verifyBtn.addEventListener('click', function (e) { return __awaiter(_this, void 
             case 2:
                 success = (_a.sent()).success;
                 if (success) {
-                    window.location.href = 'http://127.0.0.1:5500/client/filesPage.html';
+                    verifyForm.classList.add('hide');
+                    loginDiv.classList.remove('hide');
                 }
                 return [2 /*return*/];
         }
