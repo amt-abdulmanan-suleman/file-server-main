@@ -16,6 +16,13 @@ interface UserWithIdAndEmail extends User {
 
 export const signUp = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@amalitech\.org$/;
+  let role;
+  if(emailRegex.test(email)){
+    role = "admin"
+  }else{
+    role = "user"
+  }
   try {
     const hashedPassword = await hash(password, 10);
 
@@ -23,7 +30,7 @@ export const signUp = async (req: Request, res: Response) => {
       name,
       email,
       hashedPassword,
-      "user"
+      role
     ]);
     await sendVerificationEmail(rows[0].id,rows[0].email)
     return res.status(201).json({
@@ -59,9 +66,9 @@ export const logIn = async (req: Request, res: Response) => {
 
     return res
       .status(200)
-      .cookie("token", token, { httpOnly: true })
       .json({
         id: user.id,
+        token:token,
         success: true,
         message: "Logged In",
       });
@@ -75,17 +82,19 @@ export const logIn = async (req: Request, res: Response) => {
 };
 
 
-export const logout =(req:Request,res:Response)=>{
-    try {
-        res.status(200).clearCookie('token',{httpOnly:true}).json({
-            success:true,
-            message:'Log out succensfully'
-        })
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-          return res.status(500).json({
-            error: error.message,
-          });
-        }
-      }
-}
+export const logOut = async (req: Request, res: Response) => {
+  try {
+    return res
+      .status(200)
+      .json({
+        success: true,
+        message: 'Logged Out',
+      });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return res.status(500).json({
+        error: error.message,
+      });
+    }
+  }
+};
