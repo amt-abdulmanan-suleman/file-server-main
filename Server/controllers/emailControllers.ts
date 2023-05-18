@@ -1,11 +1,10 @@
 
-import { randomBytes } from 'crypto';
 import db from '../db';
 import { transporter } from '../utils/transporter';
 import  {EMAIL_USER}  from '../config';
 
 export async function sendVerificationEmail(userId: number, email: string): Promise<void> {
-  const token = randomBytes(16).toString('hex');
+  const token = Math.floor(100000 + Math.random() * 900000);
   await db.query('INSERT INTO verification_tokens (user_id, email, token) VALUES ($1, $2, $3)', [userId,email, token]);
 
   
@@ -17,7 +16,7 @@ export async function sendVerificationEmail(userId: number, email: string): Prom
     html: `
       <p>Hello,</p>
       <p>Thank you for signing up! Please this is your verification token:</p>
-      <h1>${token}</h1>
+      <p>${token}</p>
     `,
   };
 

@@ -84,12 +84,15 @@ export const sendFile =async (req:Request,res:Response) => {
 
 export const postFile = async(req:Request,res:Response) =>{
     const file = req.file;
-    const {id} = req.body;
-    const query = 'INSERT INTO files (name, path, mimetype, user_id, no_of_downloads, no_of_sent) VALUES ($1, $2, $3, $4, $5, $6) RETURNING name';
-    const values = [file?.filename, file?.path, file?.mimetype,id,0,0];
+    const {id,desc} = req.body;
+    console.log(desc[0])
+    if (!file) {
+      return res.status(400).json({ error: "File not provided" });
+    }
+    const query = 'INSERT INTO files (name, path, mimetype, user_id, no_of_downloads, no_of_sent,description) VALUES ($1, $2, $3, $4, $5, $6,$7) RETURNING name';
+    const values = [file.filename, file.path, file.mimetype,id,0,0,desc[0]];
     try {
         const{rows} = await db.query(query,values)
-
         res.status(200).json({
             success:true,
             message:`File uploaded successfully. name: ${rows[0].name});`
