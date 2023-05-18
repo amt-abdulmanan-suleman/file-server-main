@@ -8,13 +8,96 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="stylesheet" href="files.css">
+    
     <script src="files.js" defer></script>
     <title>Document</title>
 </head>
 <body>
-    <button class="logout" type="button">
-        <i class="fas fa-sign-out-alt"></i>
-        Logout
-    </button>
+    <header class="">
+        <div class="logo">
+            <i class="fas fa-file"></i>
+            <p><em>File Server</em></p>
+        </div>
+        <div class="nav-btn">
+            <button class="add">
+                <i class="fas fa-plus"></i>
+                Add file
+            </button>
+            <button class="logout" type="button">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+    </header>
+    <section class="init hide">
+        <div class="initial-display">
+            <i class="fas fa-file-archive icon1"></i>
+            <i class="fas fa-file-audio icon2"></i>
+            <i class="fas fa-file-video icon3"></i>
+            <i class="fas fa-file-pdf icon4"></i>
+            <i class="fas fa-file-image icon5"></i>
+        </div>
+    </section>
+    <section class="add-sec hide">
+        <button class="close">
+            <i class="fas fa-times"></i>
+        </button>        
+        <form action="" id="file-form">
+            <div>
+                <label for="desc">Description:</label>
+                <textarea name="desc" id="desc" cols="30" rows="5"></textarea>
+            </div>
+            <div>
+                <label for="file">File:</label>
+                <div class="input-file">
+                    <i class="fas fa-video vid icon"><p>video</p></i>
+                    <i class="fas fa-file-pdf pdf icon"><p>pdf</p></i>
+                    <i class="fas fa-image img icon"><p>image</p></i>
+                </div>
+                <div class="preview">
+                    <img width="100%" height="100%" class="image hide" src="" alt="">
+                    <video width="100%" height="100%" class="video hide" src=""></video>
+                    <iframe width="100%" height="100%" id="pdfPreview" class="hide" frameborder="0"></iframe>
+                </div>
+                <input type="file" name="file" id="file" class="hide">
+            </div>
+            <button type="button" class="post">Post</button>
+        </form>
+    </section>
+    <section class="main">
+        <div class="card">
+            <div class="file-container"></div>
+            <div class="about">
+                <h4>File</h4>
+                <p>Lorem ipsum dolor sit, 
+                    amet consectetur adipisicing elit. 
+                    Libero accusamus magni labore quidem 
+                    provident, ipsa incidunt quasi laborum 
+                    vero aperiam fugiat dolores, et repudiandae 
+                    impedit minima.
+                </p>
+            </div>
+            <div class="utility">
+                <div class="send-container">
+                    <div class="send">
+                        <label for="email">
+                            <input type="email" name="email" id="email" placeholder="email of the reciepient">
+                        </label>
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <p>Number of times sent : 5</p>
+                </div>
+                <div class="download-container">
+                    <button class="download" type="button">
+                        <i class="fas fa-download"></i>
+                        <p>download</p>
+                    </button>
+                    <p>Number of downloads: 4</p>
+                </div>
+                
+            </div>
+        </div>
+    </section>
 </body>
 </html>
