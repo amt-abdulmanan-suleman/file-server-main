@@ -22,6 +22,7 @@ header{
     display: flex;
     align-items: center;
     justify-content: space-between;
+    z-index: 1000;
 }
 .logo{
     display: flex;
@@ -101,10 +102,11 @@ form{
     display: flex;
     flex-direction: column;
     row-gap: 30px;
-    width: 50%;
+    width: 100%;
     padding: 20px;
     background-color: #fff;
     border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
 }
 form >div{
     display: flex;
@@ -144,7 +146,7 @@ textarea{
     background-color:rgb(86, 86, 243);
 }
 .add-sec{
-   width: 100%;
+   width: 50%;
    position: absolute;
    flex-direction: column;
    row-gap: 10px;
@@ -154,13 +156,13 @@ textarea{
     top: -40px;
     height: 30px;
     width: 30px;
-    right: 25%;
+    right: 0;
     background-color: #333;
 }
 .fas.fa-times{
     font-size: 1.2rem;
 }
-.fade{opacity: 0.2;}
+.fade{opacity: 0.5;}
 
 .size{
     width: 400px;
@@ -173,20 +175,21 @@ textarea{
     /* height: calc(100vh - 60px); */
     padding: 20px;
     height: auto;
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    row-gap: 20px;
 }
 .card{
     width: 300px;
-    border: 1px solid black;
     padding: 15px;
     display: flex;
     flex-direction: column;
-    row-gap: 10px;
+    row-gap: 20px;
     border-radius: 7px;
     background-color: #fff;
 }
 .file-container{
     height: 150px;
-    border: 1px solid black;
     border-radius: 7px;
 }
 .about{
@@ -248,4 +251,7 @@ textarea{
     border-radius: 7px;
     justify-content: center;
     height: 50px;
+}
+.accessibility{
+    z-index: -1000;
 }
