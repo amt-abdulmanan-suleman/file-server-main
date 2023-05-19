@@ -43,6 +43,7 @@ var initialDisplay = document.querySelector('.init');
 var postFormSection = document.querySelector('.add-sec');
 var fileInput = document.querySelector('#file');
 var postFileBtn = document.querySelector('.post');
+var mainSection = document.querySelector('.main');
 var infoString = localStorage.getItem('profile');
 var info;
 if (infoString) {
@@ -80,13 +81,18 @@ icons.forEach(function (icon) {
 closeBtn.addEventListener('click', function () {
     initialDisplay === null || initialDisplay === void 0 ? void 0 : initialDisplay.classList.remove('opacity');
     postFormSection === null || postFormSection === void 0 ? void 0 : postFormSection.classList.add('hide');
+    initialDisplay === null || initialDisplay === void 0 ? void 0 : initialDisplay.classList.remove('fade');
+    mainSection.classList.remove('fade');
+    mainSection.classList.remove('accessibility');
 });
 postBtn.addEventListener('click', function () {
-    initialDisplay === null || initialDisplay === void 0 ? void 0 : initialDisplay.classList.add('opacity');
+    initialDisplay === null || initialDisplay === void 0 ? void 0 : initialDisplay.classList.add('fade');
+    mainSection.classList.add('fade');
     postFormSection === null || postFormSection === void 0 ? void 0 : postFormSection.classList.remove('hide');
+    mainSection.classList.add('accessibility');
 });
 postFileBtn.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
-    var form, desc, formData, info, id, user, data;
+    var form, desc, formData, info, id, user, data, file;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -107,8 +113,13 @@ postFileBtn.addEventListener('click', function (e) { return __awaiter(_this, voi
                 return [4 /*yield*/, postFunc(formData)];
             case 1:
                 data = _a.sent();
-                console.log(data);
-                return [2 /*return*/];
+                if (!data.success) return [3 /*break*/, 3];
+                return [4 /*yield*/, getFile(data.id)];
+            case 2:
+                file = _a.sent();
+                console.log(file);
+                _a.label = 3;
+            case 3: return [2 /*return*/];
         }
     });
 }); });
@@ -136,6 +147,80 @@ var postFunc = function (formData) { return __awaiter(_this, void 0, void 0, fun
         }
     });
 }); };
+var getFile = function (id) { return __awaiter(_this, void 0, void 0, function () {
+    var info, response, data;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (infoString) {
+                    info = JSON.parse(infoString);
+                }
+                return [4 /*yield*/, fetch("http://localhost:3000/api/files/".concat(id), {
+                        method: 'GET',
+                        headers: {
+                            'Content-type': 'application/json',
+                            Authorization: "Bearer ".concat(info === null || info === void 0 ? void 0 : info.token)
+                        }
+                    })];
+            case 1:
+                response = _a.sent();
+                return [4 /*yield*/, response.json()];
+            case 2:
+                data = _a.sent();
+                if (data.success) {
+                    return [2 /*return*/, data.file];
+                }
+                return [2 /*return*/];
+        }
+    });
+}); };
+/**
+ * Get All Files Function
+ * @returns all files in Json Format
+ */
+var getAllFiles = function () { return __awaiter(_this, void 0, void 0, function () {
+    var info, response, data;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (infoString) {
+                    info = JSON.parse(infoString);
+                }
+                return [4 /*yield*/, fetch('http://localhost:3000/api/files', {
+                        method: 'GET',
+                        headers: {
+                            'Content-type': 'application/json',
+                            Authorization: "Bearer ".concat(info === null || info === void 0 ? void 0 : info.token)
+                        }
+                    })];
+            case 1:
+                response = _a.sent();
+                return [4 /*yield*/, response.json()];
+            case 2:
+                data = _a.sent();
+                return [2 /*return*/, data];
+        }
+    });
+}); };
+function getFiles() {
+    return __awaiter(this, void 0, void 0, function () {
+        var files;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, getAllFiles()];
+                case 1:
+                    files = _a.sent();
+                    console.log(files.files);
+                    if (files) {
+                        mainSection.classList.remove('hide');
+                        mainSection.innerHTML = fileDisplay(files.files);
+                    }
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+getFiles();
 var logoutFunc = function () { return __awaiter(_this, void 0, void 0, function () {
     var infoString, info, response, data;
     return __generator(this, function (_a) {
@@ -201,3 +286,24 @@ fileInput.addEventListener("change", function (e) {
         reader_1.readAsDataURL(file_1);
     }
 });
+function fileDisplay(files) {
+    if (!Array.isArray(files)) {
+        return ''; // Return an empty string or handle the error appropriately
+    }
+    var fileElements = files.map(function (file) {
+        var fileContent = '';
+        var filename = file.name;
+        var nameWithoutExtension = filename.split("-")[1].split(".")[0];
+        if (file.mimetype.startsWith('image/')) {
+            fileContent = "<img width='100%' height='100%' src=\"".concat(file.url, "\" alt=\"").concat(file.name, "\">");
+        }
+        else if (file.mimetype === 'application/pdf') {
+            fileContent = "<iframe width='100%' height='100%' src=\"".concat(file.url, "\" frameborder=\"0\"></iframe>");
+        }
+        else if (file.mimetype.startsWith('video/')) {
+            fileContent = "<video width='100%' height='100%' src=\"".concat(file.url, "\"></video>");
+        }
+        return "\n      <div class=\"card\">\n        <div class=\"file-container\">\n          ".concat(fileContent, "\n        </div>\n        <div class=\"about\">\n          <h4>").concat(nameWithoutExtension, "</h4>\n          <p>").concat(file.description, "</p>\n        </div>\n        <div class=\"utility\">\n          <div class=\"send-container\">\n            <div class=\"send\">\n              <label for=\"email\">\n                <input type=\"email\" name=\"email\" id=\"email\" placeholder=\"email of the recipient\">\n              </label>\n              <i class=\"fas fa-paper-plane\"></i>\n            </div>\n            <p>Number of times sent: ").concat(file.no_of_sent, "</p>\n          </div>\n          <div class=\"download-container\">\n            <button class=\"download ").concat(file.id, "\" type=\"button\">\n              <i class=\"fas fa-download\"></i>\n              <p>download</p>\n            </button>\n            <p>Number of downloads: ").concat(file.no_of_downloads, "</p>\n          </div>\n        </div>\n      </div>\n      ");
+    }).join('');
+    return fileElements;
+}

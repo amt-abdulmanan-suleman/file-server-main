@@ -79,6 +79,11 @@ const loginFunc = async(cred:Credentials)=>{
 }
 
 
+
+
+
+
+
 function errorDisplay(errArray:Err[]){
     const errorList = errArray.map((error) => {
         return `
@@ -91,6 +96,15 @@ function errorDisplay(errArray:Err[]){
     return errorList;
 }
 
+
+
+
+
+
+
+
+
+
 const getUser = async(id:string) =>{
     const response = await fetch(`http://localhost:3000/user/${id}`,{
         method:'GET',
@@ -102,6 +116,21 @@ const getUser = async(id:string) =>{
     const data = await response.json();
     return data;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 registerBtn.addEventListener('click',async(e)=>{
     e.preventDefault()

@@ -9,6 +9,9 @@ const postFormSection = document.querySelector('.add-sec');
 const fileInput = document.querySelector('#file') as HTMLInputElement;
 const postFileBtn = document.querySelector('.post') as HTMLButtonElement;
 
+const mainSection =  document.querySelector('.main')!;
+
+
 
 const infoString = localStorage.getItem('profile');
 let info;
@@ -38,11 +41,16 @@ icons.forEach((icon)=>{
 })
 closeBtn.addEventListener('click',()=>{
     initialDisplay?.classList.remove('opacity');
-    postFormSection?.classList.add('hide')
+    postFormSection?.classList.add('hide');
+    initialDisplay?.classList.remove('fade');
+    mainSection.classList.remove('fade');
+    mainSection.classList.remove('accessibility');
 })
 postBtn.addEventListener('click',()=>{
-    initialDisplay?.classList.add('opacity');
+    initialDisplay?.classList.add('fade');
+    mainSection.classList.add('fade');
     postFormSection?.classList.remove('hide')
+    mainSection.classList.add('accessibility');
 })
 
 postFileBtn.addEventListener('click', async (e) => {
@@ -66,8 +74,13 @@ postFileBtn.addEventListener('click', async (e) => {
     formData.append('desc',desc.value)
     
     const data = await postFunc(formData);
+    if(data.success){
+      const file = await getFile(data.id);
+      console.log(file)
+      // const element = fileDisplay(file);
+      // mainSection.insertAdjacentHTML('beforeend', element);
+    }
 
-    console.log(data)
   });
   
 
@@ -85,9 +98,63 @@ postFileBtn.addEventListener('click', async (e) => {
     });
   
     const data = await response.json();
-    return data;
+    return data
   };
   
+  const getFile = async(id:string) => {
+    let info;
+    if (infoString) {
+      info = JSON.parse(infoString);
+    }
+    const response = await fetch(`http://localhost:3000/api/files/${id}`,{
+      method:'GET',
+      headers:{
+        'Content-type':'application/json',
+        Authorization:`Bearer ${info?.token}`
+      }
+    })
+
+    const data =  await response.json();
+
+    if(data.success){
+      return data.file
+    }
+  }
+
+
+
+/**
+ * Get All Files Function
+ * @returns all files in Json Format
+ */
+
+const getAllFiles = async()=>{
+  let info;
+    if (infoString) {
+      info = JSON.parse(infoString);
+    }
+  const response =  await fetch('http://localhost:3000/api/files',{
+      method:'GET',
+      headers:{
+          'Content-type':'application/json',
+          Authorization: `Bearer ${info?.token}`
+      }
+  })
+  const data = await response.json();
+
+  return data;
+}
+async function getFiles(){
+  const files = await getAllFiles()
+  console.log(files.files)
+  if(files){
+    mainSection.classList.remove('hide')
+    mainSection.innerHTML = fileDisplay(files.files)
+  }
+  
+}
+
+getFiles()
 
 
 const logoutFunc = async () =>{
@@ -152,17 +219,67 @@ fileInput.addEventListener("change", (e) => {
     }
   });
   
-
-  function fileDisplay(files:Err[]){
-    const errorList = files.map((file) => {
-        return `
-          <li>
-            <i class="fas fa-times-circle"></i>
-            <p>${file.msg}</p>
-          </li>
-        `;
-      }).join('');
-    return errorList;
-}
+  interface File {
+    created_at: string;
+    description: string;
+    id: number;
+    mimetype: string;
+    readonly name: string;
+    no_of_downloads: number;
+    no_of_sent: number;
+    path: string;
+    user_id: string;
+    url: string;
+  }
   
+
+  function fileDisplay(files: File[]): string {
+    if (!Array.isArray(files)) {
+      return ''; // Return an empty string or handle the error appropriately
+    }
+    const fileElements = files.map((file) => {
+      let fileContent = '';
+      const filename = file.name;
+      const nameWithoutExtension = filename.split("-")[1].split(".")[0];
+      if (file.mimetype.startsWith('image/')) {
+        fileContent = `<img width='100%' height='100%' src="${file.url}" alt="${file.name}">`;
+      } else if (file.mimetype === 'application/pdf') {
+        fileContent = `<iframe width='100%' height='100%' src="${file.url}" frameborder="0"></iframe>`;
+      } else if (file.mimetype.startsWith('video/')) {
+        fileContent = `<video width='100%' height='100%' src="${file.url}"></video>`;
+      }
+  
+      return `
+      <div class="card">
+        <div class="file-container">
+          ${fileContent}
+        </div>
+        <div class="about">
+          <h4>${nameWithoutExtension}</h4>
+          <p>${file.description}</p>
+        </div>
+        <div class="utility">
+          <div class="send-container">
+            <div class="send">
+              <label for="email">
+                <input type="email" name="email" id="email" placeholder="email of the recipient">
+              </label>
+              <i class="fas fa-paper-plane"></i>
+            </div>
+            <p>Number of times sent: ${file.no_of_sent}</p>
+          </div>
+          <div class="download-container">
+            <button class="download ${file.id}" type="button">
+              <i class="fas fa-download"></i>
+              <p>download</p>
+            </button>
+            <p>Number of downloads: ${file.no_of_downloads}</p>
+          </div>
+        </div>
+      </div>
+      `;
+    }).join('');
+  
+    return fileElements;
+  }
   
