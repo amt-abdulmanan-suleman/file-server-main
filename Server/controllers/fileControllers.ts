@@ -9,10 +9,8 @@ export const getFiles = async(req:Request,res:Response) =>{
         
         const result = await db.query('SELECT * FROM files');
         const files = result.rows.map(file => {
-          return {
-            file,
-            url: `http://${req.headers.host}/${file.path}`
-          }
+          file.url = `http://${req.headers.host}/${file.path}`
+          return file
         });
         res.json({ files });
       } catch (error: unknown) {
@@ -82,6 +80,23 @@ export const sendFile =async (req:Request,res:Response) => {
     }
 }
 
+export const getFile =async (req:Request,res:Response)=>{
+  const {id} = req.params;
+  try {
+      const {rows} = await db.query('select * from files where id=$1',[id]);
+      res.status(200).json({
+          success:true,
+          file:rows[0]
+      })
+  } catch (error: unknown) {
+      if (error instanceof Error) {
+        return res.status(500).json({
+          error: error.message,
+        });
+      }
+  }
+}
+
 export const postFile = async(req:Request,res:Response) =>{
     const file = req.file;
     const {id,desc} = req.body;
@@ -94,6 +109,7 @@ export const postFile = async(req:Request,res:Response) =>{
     try {
         const{rows} = await db.query(query,values)
         res.status(200).json({
+            id:rows[0].id,
             success:true,
             message:`File uploaded successfully. name: ${rows[0].name});`
         })
