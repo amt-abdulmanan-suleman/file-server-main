@@ -19,6 +19,9 @@ const searchInput = document.querySelector('#search') as HTMLInputElement;
 
 
 const infoString = localStorage.getItem('profile');
+if(!infoString){
+  window.location.href = 'http://127.0.0.1:5500/client/index.html'
+}
 let info;
 if(infoString){
     info = JSON.parse(infoString);

@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <script type="module" src="./scripts/index.js" defer></script>
-    <title>File Server</title>
+    <title>Homepage</title>
 </head>
 <body>
     <section class="auth-section">
@@ -42,6 +42,7 @@
                     <label for="password-log">Password</label>
                     <input type="password" name="password" id="password-log" required>
                 </div>
+                <p class="forgot">forgot Password?</p>
                 <button class="submit-reg-btn login-btn" type="submit">Login</button>
             </form>
             <button class="already-btn-reg already-btn" type="button">Don't have an account? Register</button>
@@ -58,6 +59,33 @@
             <p class="note-msg">Verification complete...</p>
             <button class="verify-login-btn" type="button">Login</button>
         </div>
+        <form class="reset-form hide">
+            <div>
+                <label for="email-reset">Email</label>
+                <input type="email" name="email" id="email-reset" placeholder="e.g sulemanabdulmanan@gmail.com" required>
+            </div>
+            <button class="receive-btn">Receive Token</button>
+        </form>
+        <form action="" method="" class="verify-reset-form hide">
+            <div>
+                <label for="verify-reset-token"></label>
+                <input type="text" name="verify-token" id="verify-reset-token" placeholder="Enter Reset Verification Token" required>
+            </div>
+            <button class="submit-verify-reset-btn" type="submit">Verify</button>
+            <p class="note">Check your email for the verification token</p>
+        </form>
+        <form class="reset-password hide">
+            <h5>Reset your Password</h5>
+            <div>
+                <label for="new-password">New Password</label>
+                <input type="password" name="password" id="new-password" required>
+            </div>
+            <div>
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" name="password" id="confirm-password" required>
+            </div>
+            <button class="submit-reg-btn reset-password-btn" disabled type="submit">Reset Password</button>
+        </form>
     </section>
 </body>
 </html>

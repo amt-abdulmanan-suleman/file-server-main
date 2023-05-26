@@ -35,7 +35,7 @@ export const signUp = async (req: Request, res: Response) => {
     await sendVerificationEmail(rows[0].id,rows[0].email)
     return res.status(201).json({
       success: true,
-      message: "Verification Email sent",
+      message: "Verification Token Sent",
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -98,3 +98,53 @@ export const logOut = async (req: Request, res: Response) => {
     }
   }
 };
+
+export const resetToken = async(req:Request,res:Response) =>{
+  const {email} = req.body;
+
+  try {
+    const {rows} = await db.query('select id from users where email = $1',[email]);
+
+    if(rows[0]){
+      await sendVerificationEmail(rows[0].id,email)
+      res.status(200).json({
+        success:true,
+        data:{id:rows[0].id,email},
+        message:'Reset Verification Token Sent'
+      })
+    }else{
+      res.status(500).json({
+        success:false,
+        message:'Invalid email'
+      })
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return res.status(500).json({
+        error: error.message,
+      });
+    }
+  }
+}
+
+export const resetPassword = async(req:Request,res:Response) =>{
+  const {id} = req.params
+  const {password} = req.body;
+  try {
+    const hashedPassword = await hash(password, 10);
+
+    await db.query('update users set password = $1 where id = $2',[hashedPassword,id]);
+
+    res.status(200).json({
+      success:true,
+      message:'Password reset successful'
+    })
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return res.status(500).json({
+        error: error.message,
+      });
+    }
+  }
+
+}

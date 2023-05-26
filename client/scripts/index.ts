@@ -20,7 +20,20 @@ const alreadyRegBtn = document.querySelector('.already-btn-reg') as HTMLButtonEl
 const errorList = document.createElement('ul');
 const LoggedIn = localStorage.getItem('profile');
 
+const receiveBtn = document.querySelector('.receive-btn') as HTMLButtonElement;
+const emailResetInput = document.querySelector('#email-reset') as HTMLInputElement;
+const resetForm = document.querySelector('.reset-form') as HTMLFormElement;
 
+const verifyResetBtn = document.querySelector('.submit-verify-reset-btn') as HTMLButtonElement
+const verifyResetForm = document.querySelector('.verify-reset-form') as HTMLFormElement;
+const verifyResetInput = document.querySelector('#verify-reset-token') as HTMLInputElement;
+
+const resetPasswordForm = document.querySelector('.reset-password') as HTMLFormElement;
+const resetPasswordBtn = document.querySelector('.reset-password-btn') as HTMLButtonElement;
+const newPasswordInput = document.querySelector('#new-password') as HTMLInputElement
+const confirmPasswordInput = document.querySelector('#confirm-password') as HTMLInputElement
+
+const forgotPasswordBtn = document.querySelector('.forgot') as HTMLParagraphElement
 
 if(LoggedIn){
     window.location.href = 'http://127.0.0.1:5500/client/filesPage.html'
@@ -57,6 +70,7 @@ const registerFunc = async(user:User) =>{
     return response;
 }
 
+
 const verifyFunc = async(token:string) =>{
     const response = await fetch(`http://localhost:3000/verify-email/${token}`,{
         method: 'POST',
@@ -78,10 +92,32 @@ const loginFunc = async(cred:Credentials)=>{
     return response
 }
 
+const receiveResetTokenFunc = async(email:string) =>{
+    
+    const response = await fetch('http://localhost:3000/auth/reset-token',{
+        method: 'POST',
+        headers:{
+            'Content-type':'application/json'
+        },
+        body:JSON.stringify({email:email})
+    })
+    const data = await response.json();
+    return data
+}
 
 
 
-
+const resetPasswordFunc = async(password:string,id:string) => {
+    const response = await fetch(`http://localhost:3000/auth/reset-password/${id}`,{
+        method: 'POST',
+        headers:{
+            'Content-type':'application/json'
+        },
+        body:JSON.stringify({password:password})
+    })
+    const data = await response.json();
+    return data
+}
 
 
 function errorDisplay(errArray:Err[]){
@@ -178,6 +214,18 @@ loginBtn.addEventListener('click',async(e)=>{
     }
 })
 
+receiveBtn.addEventListener('click',async(e)=>{
+    e.preventDefault();
+    const email = emailResetInput.value
+    const data = await receiveResetTokenFunc(email);
+    if(data.success){
+        registerDiv.classList.add('hide');
+        loginDiv.classList.add('hide');
+        verifyForm.classList.add('hide');
+        resetForm.classList.add('hide');
+        verifyResetForm.classList.remove('hide')
+    }
+})
 
 verifyBtn.addEventListener('click',async(e)=>{
     e.preventDefault()
@@ -191,7 +239,26 @@ verifyBtn.addEventListener('click',async(e)=>{
         verifyForm.classList.add('hide')
         loginDiv.classList.remove('hide')
     }
-})
+});
+let resetId:string;
+verifyResetBtn.addEventListener('click',async(e)=>{
+    e.preventDefault()
+
+    const token = verifyResetInput.value;
+    const response = await verifyFunc(token);
+
+    const{success,id} = await response.json();
+    
+
+    if(success){
+        resetId=id;
+        verifyForm.classList.add('hide');
+        loginDiv.classList.add('hide');
+        registerDiv.classList.add('hide');
+        resetPasswordForm.classList.remove('hide');
+        verifyResetForm.classList.add('hide')
+    }
+});
 
 alreadyLoginBtn.addEventListener('click',()=>{
     registerDiv.classList.add('hide');
@@ -205,3 +272,34 @@ alreadyRegBtn.addEventListener('click',()=>{
 
 
 
+resetPasswordBtn.addEventListener('click',async(e)=>{
+    e.preventDefault()
+    const password = newPasswordInput.value
+    const {success} = await resetPasswordFunc(password,resetId);
+
+    if(success){
+        verifyForm.classList.add('hide');
+        loginDiv.classList.remove('hide');
+        registerDiv.classList.add('hide');
+        resetPasswordForm.classList.add('hide');
+        resetForm.classList.add('hide');
+    }
+})
+
+forgotPasswordBtn.addEventListener('click',(e)=>{
+    e.preventDefault()
+    verifyForm.classList.add('hide');
+    resetForm.classList.remove('hide')
+    loginDiv.classList.add('hide');
+    registerDiv.classList.add('hide');
+    resetPasswordForm.classList.add('hide');
+})
+
+confirmPasswordInput.addEventListener('input',(e)=>{
+    const newPassword = newPasswordInput.value
+    const input = e.target as HTMLInputElement;
+    
+    if(newPassword === input.value){
+        resetPasswordBtn.disabled = false;
+    }
+})

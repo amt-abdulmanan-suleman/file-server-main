@@ -5,11 +5,13 @@ const router = express.Router();
 
 router.post('/verify-email/:token',async(req,res,next)=>{
     const { token } = req.params;
+    const {type} = req.body
     try {
-        await verifyEmail(token);
+        const id = await verifyEmail(token);
         res.status(200).json({
             success:true,
-            message:'Verification successful'
+            message:`${type} Verification Successful`,
+            id
         })
         
     } catch (error) {

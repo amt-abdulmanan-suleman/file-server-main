@@ -51,6 +51,17 @@ var alreadyLoginBtn = document.querySelector('.already-btn-login');
 var alreadyRegBtn = document.querySelector('.already-btn-reg');
 var errorList = document.createElement('ul');
 var LoggedIn = localStorage.getItem('profile');
+var receiveBtn = document.querySelector('.receive-btn');
+var emailResetInput = document.querySelector('#email-reset');
+var resetForm = document.querySelector('.reset-form');
+var verifyResetBtn = document.querySelector('.submit-verify-reset-btn');
+var verifyResetForm = document.querySelector('.verify-reset-form');
+var verifyResetInput = document.querySelector('#verify-reset-token');
+var resetPasswordForm = document.querySelector('.reset-password');
+var resetPasswordBtn = document.querySelector('.reset-password-btn');
+var newPasswordInput = document.querySelector('#new-password');
+var confirmPasswordInput = document.querySelector('#confirm-password');
+var forgotPasswordBtn = document.querySelector('.forgot');
 if (LoggedIn) {
     window.location.href = 'http://127.0.0.1:5500/client/filesPage.html';
 }
@@ -101,6 +112,46 @@ var loginFunc = function (cred) { return __awaiter(_this, void 0, void 0, functi
             case 1:
                 response = _a.sent();
                 return [2 /*return*/, response];
+        }
+    });
+}); };
+var receiveResetTokenFunc = function (email) { return __awaiter(_this, void 0, void 0, function () {
+    var response, data;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, fetch('http://localhost:3000/auth/reset-token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email })
+                })];
+            case 1:
+                response = _a.sent();
+                return [4 /*yield*/, response.json()];
+            case 2:
+                data = _a.sent();
+                return [2 /*return*/, data];
+        }
+    });
+}); };
+var resetPasswordFunc = function (password, id) { return __awaiter(_this, void 0, void 0, function () {
+    var response, data;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, fetch("http://localhost:3000/auth/reset-password/".concat(id), {
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json'
+                    },
+                    body: JSON.stringify({ password: password })
+                })];
+            case 1:
+                response = _a.sent();
+                return [4 /*yield*/, response.json()];
+            case 2:
+                data = _a.sent();
+                return [2 /*return*/, data];
         }
     });
 }); };
@@ -195,6 +246,27 @@ loginBtn.addEventListener('click', function (e) { return __awaiter(_this, void 0
         }
     });
 }); });
+receiveBtn.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
+    var email, data;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                e.preventDefault();
+                email = emailResetInput.value;
+                return [4 /*yield*/, receiveResetTokenFunc(email)];
+            case 1:
+                data = _a.sent();
+                if (data.success) {
+                    registerDiv.classList.add('hide');
+                    loginDiv.classList.add('hide');
+                    verifyForm.classList.add('hide');
+                    resetForm.classList.add('hide');
+                    verifyResetForm.classList.remove('hide');
+                }
+                return [2 /*return*/];
+        }
+    });
+}); });
 verifyBtn.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
     var token, response, success;
     return __generator(this, function (_a) {
@@ -216,6 +288,32 @@ verifyBtn.addEventListener('click', function (e) { return __awaiter(_this, void 
         }
     });
 }); });
+var resetId;
+verifyResetBtn.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
+    var token, response, _a, success, id;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                e.preventDefault();
+                token = verifyResetInput.value;
+                return [4 /*yield*/, verifyFunc(token)];
+            case 1:
+                response = _b.sent();
+                return [4 /*yield*/, response.json()];
+            case 2:
+                _a = _b.sent(), success = _a.success, id = _a.id;
+                if (success) {
+                    resetId = id;
+                    verifyForm.classList.add('hide');
+                    loginDiv.classList.add('hide');
+                    registerDiv.classList.add('hide');
+                    resetPasswordForm.classList.remove('hide');
+                    verifyResetForm.classList.add('hide');
+                }
+                return [2 /*return*/];
+        }
+    });
+}); });
 alreadyLoginBtn.addEventListener('click', function () {
     registerDiv.classList.add('hide');
     loginDiv.classList.remove('hide');
@@ -223,4 +321,40 @@ alreadyLoginBtn.addEventListener('click', function () {
 alreadyRegBtn.addEventListener('click', function () {
     registerDiv.classList.remove('hide');
     loginDiv.classList.add('hide');
+});
+resetPasswordBtn.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
+    var password, success;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                e.preventDefault();
+                password = newPasswordInput.value;
+                return [4 /*yield*/, resetPasswordFunc(password, resetId)];
+            case 1:
+                success = (_a.sent()).success;
+                if (success) {
+                    verifyForm.classList.add('hide');
+                    loginDiv.classList.remove('hide');
+                    registerDiv.classList.add('hide');
+                    resetPasswordForm.classList.add('hide');
+                    resetForm.classList.add('hide');
+                }
+                return [2 /*return*/];
+        }
+    });
+}); });
+forgotPasswordBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    verifyForm.classList.add('hide');
+    resetForm.classList.remove('hide');
+    loginDiv.classList.add('hide');
+    registerDiv.classList.add('hide');
+    resetPasswordForm.classList.add('hide');
+});
+confirmPasswordInput.addEventListener('input', function (e) {
+    var newPassword = newPasswordInput.value;
+    var input = e.target;
+    if (newPassword === input.value) {
+        resetPasswordBtn.disabled = false;
+    }
 });

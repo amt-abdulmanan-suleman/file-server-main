@@ -32,5 +32,7 @@ export async function verifyEmail(token: string): Promise<void> {
     const userId = rows[0].user_id;
     await db.query('UPDATE users SET isVerified = true WHERE id = $1', [userId]);
     await db.query('DELETE FROM verification_tokens WHERE token = $1', [token]);
+
+    return userId
   }
   

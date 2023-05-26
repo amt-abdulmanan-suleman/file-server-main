@@ -61,12 +61,16 @@ input{
     border-radius: 7px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
-.submit-verify-btn{
+.submit-verify-btn,.receive-btn,.submit-verify-reset-btn{
     border: unset;
     border-radius: 7px;
     background-color: rgb(81, 185, 133);
     height: 40px;
     color: white;
+}
+.reset-password-btn:disabled{
+    opacity: 0.3;
+    cursor: not-allowed;
 }
 .hide{
     display: none !important;
@@ -138,4 +142,9 @@ li{
 }
 .fas.fa-times-circle{
     color: #ff4d4d;
+}
+.forgot{
+    color: #ff4d4d;
+    font-size: 13px;
+    cursor: pointer;
 }
