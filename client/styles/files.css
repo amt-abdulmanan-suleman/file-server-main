@@ -136,11 +136,14 @@ form >div{
 .pdf{
     color: red;
 }
-textarea{
+textarea,#title{
     padding:5px;
     background-color: rgb(230, 230, 230);
     border: unset;
     border-radius: 7px;
+}
+#title{
+    height: 40px;
 }
 .post{
     background-color:rgb(86, 86, 243);
@@ -168,7 +171,6 @@ textarea{
     width: 400px;
 }
 .main{
-    border: 1px solid blue;
     width: 100%;
     position: absolute;
     top: 60px;
@@ -254,4 +256,28 @@ textarea{
 }
 .accessibility{
     z-index: -1000;
+}
+
+
+.input-search{
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+    width: 300px;
+    height: 40px;
+    background-color: #fff;
+    border-radius: 5px;
+}
+.input-search input{
+    height:40px ;
+    width: 90%;
+    border: unset;
+    outline: unset;
+    padding: 5px;
+    border-radius: 5px;
+}
+.fas.fa-search{
+    color: black;
+    font-size: 17px;
+    margin-right: 10px;
 }

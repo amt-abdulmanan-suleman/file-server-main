@@ -10,6 +10,11 @@ const fileInput = document.querySelector('#file') as HTMLInputElement;
 const postFileBtn = document.querySelector('.post') as HTMLButtonElement;
 
 const mainSection =  document.querySelector('.main')!;
+const downloadBtn = document.querySelector('.download') as HTMLButtonElement;
+
+const searchInput = document.querySelector('#search') as HTMLInputElement;
+
+
 
 
 
@@ -19,9 +24,69 @@ if(infoString){
     info = JSON.parse(infoString);
     const {user} = info;
     if(user.user.role=="user"){
-        postBtn.classList.add('hide')
+        postBtn.classList.add('hide');
     } 
 }
+
+/**
+ * Get All Files Function
+ * @returns all files in Json Format
+ */
+
+const getAllFiles = async()=>{
+  let info;
+    if (infoString) {
+      info = JSON.parse(infoString);
+    }
+  const response =  await fetch('http://localhost:3000/api/files',{
+      method:'GET',
+      headers:{
+          'Content-type':'application/json',
+          Authorization: `Bearer ${info?.token}`
+      }
+  })
+  const data = await response.json();
+
+  return data;
+}
+
+async function getFiles(){
+  const files = await getAllFiles()
+  console.log(files)
+  if(files){
+    mainSection.classList.remove('hide')
+    mainSection.innerHTML = fileDisplay(files.files)
+  }else{
+    mainSection.classList.add('hide');
+    initialDisplay?.classList.remove('hide');
+  }
+  let info;
+  let role;
+    if (infoString) {
+      info = JSON.parse(infoString);
+      role = info.user.user.role;
+    }
+    if(role=='user'){
+      const sentParagraph = document.querySelectorAll('.sent');
+      sentParagraph.forEach((sent)=>{
+        sent.classList.add('hide')
+      })
+      const downloadParagraph = document.querySelectorAll('.p-download');
+      downloadParagraph.forEach((download)=>{
+        download.classList.add('hide')
+      })
+    }
+    downloadFunc()
+    sendFileFunc()
+    searchInput.addEventListener('input',(e)=>{
+      const input = e.target as HTMLInputElement;
+      const str = input.value;
+      const result = files.files.filter((file:File)=>file.name.includes(str));
+      mainSection.innerHTML = fileDisplay(result)
+    })
+}
+
+getFiles()
 
 LogoutBtn.addEventListener('click',async(e)=>{
     e.preventDefault();
@@ -57,6 +122,7 @@ postFileBtn.addEventListener('click', async (e) => {
     e.preventDefault();
     const form = document.querySelector('#file-form') as HTMLFormElement;
     const desc = document.querySelector('#desc') as HTMLTextAreaElement;
+    const titleInput = document.querySelector('#title') as HTMLInputElement
     const formData = new FormData(form);
     
     if (fileInput.files && fileInput.files[0]) {
@@ -72,13 +138,15 @@ postFileBtn.addEventListener('click', async (e) => {
     
     formData.append('id',id)
     formData.append('desc',desc.value)
+    formData.append('title',titleInput.value)
     
     const data = await postFunc(formData);
+    console.log(data)
     if(data.success){
       const file = await getFile(data.id);
       console.log(file)
-      // const element = fileDisplay(file);
-      // mainSection.insertAdjacentHTML('beforeend', element);
+      const element = fileDisplay(file);
+      mainSection.insertAdjacentHTML('beforeend', element);
     }
 
   });
@@ -123,38 +191,7 @@ postFileBtn.addEventListener('click', async (e) => {
 
 
 
-/**
- * Get All Files Function
- * @returns all files in Json Format
- */
 
-const getAllFiles = async()=>{
-  let info;
-    if (infoString) {
-      info = JSON.parse(infoString);
-    }
-  const response =  await fetch('http://localhost:3000/api/files',{
-      method:'GET',
-      headers:{
-          'Content-type':'application/json',
-          Authorization: `Bearer ${info?.token}`
-      }
-  })
-  const data = await response.json();
-
-  return data;
-}
-async function getFiles(){
-  const files = await getAllFiles()
-  console.log(files.files)
-  if(files){
-    mainSection.classList.remove('hide')
-    mainSection.innerHTML = fileDisplay(files.files)
-  }
-  
-}
-
-getFiles()
 
 
 const logoutFunc = async () =>{
@@ -180,6 +217,102 @@ const logoutFunc = async () =>{
     }
 
 }
+
+
+function downloadFunc(){
+  let info:{token?:string};
+  if(infoString){
+     info = JSON.parse(infoString) 
+  }
+const downloadButtons = document.querySelectorAll('.download');
+console.log(downloadButtons)
+downloadButtons.forEach((button) => {
+  button.addEventListener('click', async (e) => {
+    // e.preventDefault();
+
+    const fileId = button.classList[1];
+    const response = await fetch(`http://localhost:3000/api/files/download/${Number(fileId)}`, {
+      method: 'GET',
+      headers: {
+        'Content-type':'application/json',
+        Authorization: `Bearer ${info?.token}`,
+      },
+    });
+    const name = button.classList[2]
+    if (response.ok) {
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = name; // Provide a default or custom filename for the downloaded file
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      const value = document.querySelector(`#${name}`) as HTMLSpanElement;
+      const num = value.innerText;
+      value.innerText = (Number(num) + 1).toString();
+    } else {
+      const errorData = await response.json();
+      console.error(errorData);
+    }
+  });
+});
+}
+    
+
+
+
+
+
+function sendFileFunc(){
+  let info:{token?:string};
+  let senders_email:string;
+  let role:string;
+  if(infoString){
+     info = JSON.parse(infoString) 
+     const {user} = JSON.parse(infoString);
+     senders_email = user.user.email;
+     role = user.user.role;
+  }
+  
+  const emailBtn = document.querySelectorAll('.fa-paper-plane');
+
+  emailBtn.forEach((button)=>{
+    button.addEventListener('click',async(e)=>{
+      e.preventDefault();
+      const fileId =Number(button.classList[2])
+      const emailSentSpan = document.querySelector(`#fa-paper-plane${fileId}`) as HTMLSpanElement;
+      var parentDiv = button.parentNode;
+      var inputElement = parentDiv?.querySelector('input[type="email"]') as HTMLInputElement;
+      let receipient_email;
+      if (inputElement) {
+        receipient_email = inputElement.value;
+      }
+      const data = {
+        fileId:fileId,
+        user_email :senders_email,
+        receipient_email:receipient_email
+      }
+      const response = await fetch(`http://localhost:3000/api/files/send/`,{
+        method:'POST',
+        headers: {
+          'Content-type':'application/json',
+          Authorization: `Bearer ${info?.token}`,
+        },
+        body:JSON.stringify(data)
+      })
+      if(response.ok){
+        const num = emailSentSpan.innerText;
+        emailSentSpan.innerText = (Number(num) + 1).toString();
+        inputElement.value = "";
+        window.alert("File Sent")
+      }
+    })
+  })
+}
+
 
 
 fileInput.addEventListener("change", (e) => {
@@ -239,8 +372,7 @@ fileInput.addEventListener("change", (e) => {
     }
     const fileElements = files.map((file) => {
       let fileContent = '';
-      const filename = file.name;
-      const nameWithoutExtension = filename.split("-")[1].split(".")[0];
+      const nameWithoutExtension = file.name;
       if (file.mimetype.startsWith('image/')) {
         fileContent = `<img width='100%' height='100%' src="${file.url}" alt="${file.name}">`;
       } else if (file.mimetype === 'application/pdf') {
@@ -262,18 +394,18 @@ fileInput.addEventListener("change", (e) => {
           <div class="send-container">
             <div class="send">
               <label for="email">
-                <input type="email" name="email" id="email" placeholder="email of the recipient">
+                <input class=${file.id} type="email" name="email" id="email" placeholder="email of the recipient">
               </label>
-              <i class="fas fa-paper-plane"></i>
+              <i class="fas fa-paper-plane ${file.id}"></i>
             </div>
-            <p>Number of times sent: ${file.no_of_sent}</p>
+            <p class="sent">Number of times sent:<span id="fa-paper-plane${file.id}">${file.no_of_sent}</span></p>
           </div>
           <div class="download-container">
-            <button class="download ${file.id}" type="button">
+            <button class="download ${file.id} ${nameWithoutExtension}" type="button">
               <i class="fas fa-download"></i>
               <p>download</p>
             </button>
-            <p>Number of downloads: ${file.no_of_downloads}</p>
+            <p class="p-download">Number of downloads: <span id=${nameWithoutExtension}>${file.no_of_downloads}</span></p>
           </div>
         </div>
       </div>
@@ -282,4 +414,6 @@ fileInput.addEventListener("change", (e) => {
   
     return fileElements;
   }
+  
+
   

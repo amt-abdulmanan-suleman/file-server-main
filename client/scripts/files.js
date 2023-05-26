@@ -44,6 +44,8 @@ var postFormSection = document.querySelector('.add-sec');
 var fileInput = document.querySelector('#file');
 var postFileBtn = document.querySelector('.post');
 var mainSection = document.querySelector('.main');
+var downloadBtn = document.querySelector('.download');
+var searchInput = document.querySelector('#search');
 var infoString = localStorage.getItem('profile');
 var info;
 if (infoString) {
@@ -53,6 +55,79 @@ if (infoString) {
         postBtn.classList.add('hide');
     }
 }
+/**
+ * Get All Files Function
+ * @returns all files in Json Format
+ */
+var getAllFiles = function () { return __awaiter(_this, void 0, void 0, function () {
+    var info, response, data;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (infoString) {
+                    info = JSON.parse(infoString);
+                }
+                return [4 /*yield*/, fetch('http://localhost:3000/api/files', {
+                        method: 'GET',
+                        headers: {
+                            'Content-type': 'application/json',
+                            Authorization: "Bearer ".concat(info === null || info === void 0 ? void 0 : info.token)
+                        }
+                    })];
+            case 1:
+                response = _a.sent();
+                return [4 /*yield*/, response.json()];
+            case 2:
+                data = _a.sent();
+                return [2 /*return*/, data];
+        }
+    });
+}); };
+function getFiles() {
+    return __awaiter(this, void 0, void 0, function () {
+        var files, info, role, sentParagraph, downloadParagraph;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, getAllFiles()];
+                case 1:
+                    files = _a.sent();
+                    console.log(files);
+                    if (files) {
+                        mainSection.classList.remove('hide');
+                        mainSection.innerHTML = fileDisplay(files.files);
+                    }
+                    else {
+                        mainSection.classList.add('hide');
+                        initialDisplay === null || initialDisplay === void 0 ? void 0 : initialDisplay.classList.remove('hide');
+                    }
+                    if (infoString) {
+                        info = JSON.parse(infoString);
+                        role = info.user.user.role;
+                    }
+                    if (role == 'user') {
+                        sentParagraph = document.querySelectorAll('.sent');
+                        sentParagraph.forEach(function (sent) {
+                            sent.classList.add('hide');
+                        });
+                        downloadParagraph = document.querySelectorAll('.p-download');
+                        downloadParagraph.forEach(function (download) {
+                            download.classList.add('hide');
+                        });
+                    }
+                    downloadFunc();
+                    sendFileFunc();
+                    searchInput.addEventListener('input', function (e) {
+                        var input = e.target;
+                        var str = input.value;
+                        var result = files.files.filter(function (file) { return file.name.includes(str); });
+                        mainSection.innerHTML = fileDisplay(result);
+                    });
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+getFiles();
 LogoutBtn.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
     var data;
     return __generator(this, function (_a) {
@@ -92,13 +167,14 @@ postBtn.addEventListener('click', function () {
     mainSection.classList.add('accessibility');
 });
 postFileBtn.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
-    var form, desc, formData, info, id, user, data, file;
+    var form, desc, titleInput, formData, info, id, user, data, file, element;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 e.preventDefault();
                 form = document.querySelector('#file-form');
                 desc = document.querySelector('#desc');
+                titleInput = document.querySelector('#title');
                 formData = new FormData(form);
                 if (fileInput.files && fileInput.files[0]) {
                     formData.set('file', fileInput.files[0]);
@@ -110,14 +186,18 @@ postFileBtn.addEventListener('click', function (e) { return __awaiter(_this, voi
                 }
                 formData.append('id', id);
                 formData.append('desc', desc.value);
+                formData.append('title', titleInput.value);
                 return [4 /*yield*/, postFunc(formData)];
             case 1:
                 data = _a.sent();
+                console.log(data);
                 if (!data.success) return [3 /*break*/, 3];
                 return [4 /*yield*/, getFile(data.id)];
             case 2:
                 file = _a.sent();
                 console.log(file);
+                element = fileDisplay(file);
+                mainSection.insertAdjacentHTML('beforeend', element);
                 _a.label = 3;
             case 3: return [2 /*return*/];
         }
@@ -174,53 +254,6 @@ var getFile = function (id) { return __awaiter(_this, void 0, void 0, function (
         }
     });
 }); };
-/**
- * Get All Files Function
- * @returns all files in Json Format
- */
-var getAllFiles = function () { return __awaiter(_this, void 0, void 0, function () {
-    var info, response, data;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                if (infoString) {
-                    info = JSON.parse(infoString);
-                }
-                return [4 /*yield*/, fetch('http://localhost:3000/api/files', {
-                        method: 'GET',
-                        headers: {
-                            'Content-type': 'application/json',
-                            Authorization: "Bearer ".concat(info === null || info === void 0 ? void 0 : info.token)
-                        }
-                    })];
-            case 1:
-                response = _a.sent();
-                return [4 /*yield*/, response.json()];
-            case 2:
-                data = _a.sent();
-                return [2 /*return*/, data];
-        }
-    });
-}); };
-function getFiles() {
-    return __awaiter(this, void 0, void 0, function () {
-        var files;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, getAllFiles()];
-                case 1:
-                    files = _a.sent();
-                    console.log(files.files);
-                    if (files) {
-                        mainSection.classList.remove('hide');
-                        mainSection.innerHTML = fileDisplay(files.files);
-                    }
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
-getFiles();
 var logoutFunc = function () { return __awaiter(_this, void 0, void 0, function () {
     var infoString, info, response, data;
     return __generator(this, function (_a) {
@@ -251,6 +284,111 @@ var logoutFunc = function () { return __awaiter(_this, void 0, void 0, function 
         }
     });
 }); };
+function downloadFunc() {
+    var _this = this;
+    var info;
+    if (infoString) {
+        info = JSON.parse(infoString);
+    }
+    var downloadButtons = document.querySelectorAll('.download');
+    console.log(downloadButtons);
+    downloadButtons.forEach(function (button) {
+        button.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
+            var fileId, response, name, blob, url, a, value, num, errorData;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        fileId = button.classList[1];
+                        return [4 /*yield*/, fetch("http://localhost:3000/api/files/download/".concat(Number(fileId)), {
+                                method: 'GET',
+                                headers: {
+                                    'Content-type': 'application/json',
+                                    Authorization: "Bearer ".concat(info === null || info === void 0 ? void 0 : info.token)
+                                }
+                            })];
+                    case 1:
+                        response = _a.sent();
+                        name = button.classList[2];
+                        if (!response.ok) return [3 /*break*/, 3];
+                        return [4 /*yield*/, response.blob()];
+                    case 2:
+                        blob = _a.sent();
+                        url = URL.createObjectURL(blob);
+                        a = document.createElement('a');
+                        a.href = url;
+                        a.download = name; // Provide a default or custom filename for the downloaded file
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        value = document.querySelector("#".concat(name));
+                        num = value.innerText;
+                        value.innerText = (Number(num) + 1).toString();
+                        return [3 /*break*/, 5];
+                    case 3: return [4 /*yield*/, response.json()];
+                    case 4:
+                        errorData = _a.sent();
+                        console.error(errorData);
+                        _a.label = 5;
+                    case 5: return [2 /*return*/];
+                }
+            });
+        }); });
+    });
+}
+function sendFileFunc() {
+    var _this = this;
+    var info;
+    var senders_email;
+    var role;
+    if (infoString) {
+        info = JSON.parse(infoString);
+        var user = JSON.parse(infoString).user;
+        senders_email = user.user.email;
+        role = user.user.role;
+    }
+    var emailBtn = document.querySelectorAll('.fa-paper-plane');
+    emailBtn.forEach(function (button) {
+        button.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
+            var fileId, emailSentSpan, parentDiv, inputElement, receipient_email, data, response, num;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        e.preventDefault();
+                        fileId = Number(button.classList[2]);
+                        emailSentSpan = document.querySelector("#fa-paper-plane".concat(fileId));
+                        parentDiv = button.parentNode;
+                        inputElement = parentDiv === null || parentDiv === void 0 ? void 0 : parentDiv.querySelector('input[type="email"]');
+                        if (inputElement) {
+                            receipient_email = inputElement.value;
+                        }
+                        data = {
+                            fileId: fileId,
+                            user_email: senders_email,
+                            receipient_email: receipient_email
+                        };
+                        return [4 /*yield*/, fetch("http://localhost:3000/api/files/send/", {
+                                method: 'POST',
+                                headers: {
+                                    'Content-type': 'application/json',
+                                    Authorization: "Bearer ".concat(info === null || info === void 0 ? void 0 : info.token)
+                                },
+                                body: JSON.stringify(data)
+                            })];
+                    case 1:
+                        response = _a.sent();
+                        if (response.ok) {
+                            num = emailSentSpan.innerText;
+                            emailSentSpan.innerText = (Number(num) + 1).toString();
+                            inputElement.value = "";
+                            window.alert("File Sent");
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+    });
+}
 fileInput.addEventListener("change", function (e) {
     e.preventDefault();
     if (fileInput.files) {
@@ -292,8 +430,7 @@ function fileDisplay(files) {
     }
     var fileElements = files.map(function (file) {
         var fileContent = '';
-        var filename = file.name;
-        var nameWithoutExtension = filename.split("-")[1].split(".")[0];
+        var nameWithoutExtension = file.name;
         if (file.mimetype.startsWith('image/')) {
             fileContent = "<img width='100%' height='100%' src=\"".concat(file.url, "\" alt=\"").concat(file.name, "\">");
         }
@@ -303,7 +440,7 @@ function fileDisplay(files) {
         else if (file.mimetype.startsWith('video/')) {
             fileContent = "<video width='100%' height='100%' src=\"".concat(file.url, "\"></video>");
         }
-        return "\n      <div class=\"card\">\n        <div class=\"file-container\">\n          ".concat(fileContent, "\n        </div>\n        <div class=\"about\">\n          <h4>").concat(nameWithoutExtension, "</h4>\n          <p>").concat(file.description, "</p>\n        </div>\n        <div class=\"utility\">\n          <div class=\"send-container\">\n            <div class=\"send\">\n              <label for=\"email\">\n                <input type=\"email\" name=\"email\" id=\"email\" placeholder=\"email of the recipient\">\n              </label>\n              <i class=\"fas fa-paper-plane\"></i>\n            </div>\n            <p>Number of times sent: ").concat(file.no_of_sent, "</p>\n          </div>\n          <div class=\"download-container\">\n            <button class=\"download ").concat(file.id, "\" type=\"button\">\n              <i class=\"fas fa-download\"></i>\n              <p>download</p>\n            </button>\n            <p>Number of downloads: ").concat(file.no_of_downloads, "</p>\n          </div>\n        </div>\n      </div>\n      ");
+        return "\n      <div class=\"card\">\n        <div class=\"file-container\">\n          ".concat(fileContent, "\n        </div>\n        <div class=\"about\">\n          <h4>").concat(nameWithoutExtension, "</h4>\n          <p>").concat(file.description, "</p>\n        </div>\n        <div class=\"utility\">\n          <div class=\"send-container\">\n            <div class=\"send\">\n              <label for=\"email\">\n                <input class=").concat(file.id, " type=\"email\" name=\"email\" id=\"email\" placeholder=\"email of the recipient\">\n              </label>\n              <i class=\"fas fa-paper-plane ").concat(file.id, "\"></i>\n            </div>\n            <p class=\"sent\">Number of times sent:<span id=\"fa-paper-plane").concat(file.id, "\">").concat(file.no_of_sent, "</span></p>\n          </div>\n          <div class=\"download-container\">\n            <button class=\"download ").concat(file.id, " ").concat(nameWithoutExtension, "\" type=\"button\">\n              <i class=\"fas fa-download\"></i>\n              <p>download</p>\n            </button>\n            <p class=\"p-download\">Number of downloads: <span id=").concat(nameWithoutExtension, ">").concat(file.no_of_downloads, "</span></p>\n          </div>\n        </div>\n      </div>\n      ");
     }).join('');
     return fileElements;
 }

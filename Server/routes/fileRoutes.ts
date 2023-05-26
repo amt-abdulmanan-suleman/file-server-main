@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/',userAuth, getFiles)
 router.get('/download/:id',userAuth,downloadFile)
 router.get('/:id',adminAuth,getFile)
-router.post('/send/:id',userAuth,sendFile)
+router.post('/send/',userAuth,sendFile)
 router.post('/upload',adminAuth,upload.single('file'),postFile)
 router.delete('/:id',adminAuth, deleteFiles)
 

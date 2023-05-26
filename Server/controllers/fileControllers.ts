@@ -24,13 +24,13 @@ export const getFiles = async(req:Request,res:Response) =>{
 
 export const downloadFile = async(req:Request,res:Response) =>{
     const fileId = req.params.id;
-    const query = 'SELECT name, path FROM files WHERE id = $1';
+    const query = 'SELECT name, path,no_of_downloads FROM files WHERE id = $1';
     const values = [fileId];
     try {
         const result = await db.query(query, values);
         const file = result.rows[0];
-        const filePath = file.path;
-        res.download(filePath);
+        await db.query('update files set no_of_downloads = $1 where id = $2',[file.no_of_downloads + 1,fileId]);
+        res.download(file.path);
     } catch (error: unknown) {
         if (error instanceof Error) {
           return res.status(500).json({
@@ -41,9 +41,8 @@ export const downloadFile = async(req:Request,res:Response) =>{
 }
 
 export const sendFile =async (req:Request,res:Response) => {
-    const fileId = req.params.id;
-    const {user_email,receipient_email} = req.body
-    const query = 'SELECT name, path FROM files WHERE id = $1';
+    const {fileId,user_email,receipient_email} = req.body
+    const query = 'SELECT * FROM files WHERE id = $1';
     const values = [fileId];
 
     try {
@@ -61,7 +60,7 @@ export const sendFile =async (req:Request,res:Response) => {
             },
             ],
         };
-
+        await db.query('update files set no_of_sent = $1 where id = $2',[file.no_of_sent + 1,fileId])
         transporter.sendMail(mailOptions, (err, info) => {
             if (err) {
             console.error(err);
@@ -99,13 +98,12 @@ export const getFile =async (req:Request,res:Response)=>{
 
 export const postFile = async(req:Request,res:Response) =>{
     const file = req.file;
-    const {id,desc} = req.body;
-    console.log(desc[0])
+    const {id,desc,title} = req.body;
     if (!file) {
       return res.status(400).json({ error: "File not provided" });
     }
     const query = 'INSERT INTO files (name, path, mimetype, user_id, no_of_downloads, no_of_sent,description) VALUES ($1, $2, $3, $4, $5, $6,$7) RETURNING name';
-    const values = [file.filename, file.path, file.mimetype,id,0,0,desc[0]];
+    const values = [title[0], file.path, file.mimetype,id,0,0,desc[0]];
     try {
         const{rows} = await db.query(query,values)
         res.status(200).json({
