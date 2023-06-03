@@ -19,7 +19,7 @@ app.use(cors())
 /* Middleware to parse the body from requests*/
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
-
+app.use(express.static('uploads'))
 app.use('/uploads', express.static('uploads'));
  
 
