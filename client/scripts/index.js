@@ -69,7 +69,7 @@ var registerFunc = function (user) { return __awaiter(_this, void 0, void 0, fun
     var response;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, fetch('http://localhost:3000/auth/signup', {
+            case 0: return [4 /*yield*/, fetch('https://file-server-main.vercel.app/auth/signup', {
                     method: 'POST',
                     headers: {
                         'Content-type': 'application/json'
@@ -86,7 +86,7 @@ var verifyFunc = function (token) { return __awaiter(_this, void 0, void 0, func
     var response;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, fetch("http://localhost:3000/verify-email/".concat(token), {
+            case 0: return [4 /*yield*/, fetch("https://file-server-main.vercel.app/verify-email/".concat(token), {
                     method: 'POST',
                     headers: {
                         'Content-type': 'application/json'
@@ -102,7 +102,7 @@ var loginFunc = function (cred) { return __awaiter(_this, void 0, void 0, functi
     var response;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, fetch("http://localhost:3000/auth/login", {
+            case 0: return [4 /*yield*/, fetch("https://file-server-main.vercel.app/auth/login", {
                     method: 'POST',
                     headers: {
                         'Content-type': 'application/json'
@@ -119,7 +119,7 @@ var receiveResetTokenFunc = function (email) { return __awaiter(_this, void 0, v
     var response, data;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, fetch('http://localhost:3000/auth/reset-token', {
+            case 0: return [4 /*yield*/, fetch('https://file-server-main.vercel.app/auth/reset-token', {
                     method: 'POST',
                     headers: {
                         'Content-type': 'application/json'
@@ -139,7 +139,7 @@ var resetPasswordFunc = function (password, id) { return __awaiter(_this, void 0
     var response, data;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, fetch("http://localhost:3000/auth/reset-password/".concat(id), {
+            case 0: return [4 /*yield*/, fetch("https://file-server-main.vercel.app/auth/reset-password/".concat(id), {
                     method: 'POST',
                     headers: {
                         'Content-type': 'application/json'
@@ -165,7 +165,7 @@ var getUser = function (id) { return __awaiter(_this, void 0, void 0, function (
     var response, data;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, fetch("http://localhost:3000/user/".concat(id), {
+            case 0: return [4 /*yield*/, fetch("https://file-server-main.vercel.app/user/".concat(id), {
                     method: 'GET',
                     headers: {
                         'Content-type': 'application/json'

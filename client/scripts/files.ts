@@ -41,7 +41,7 @@ const getAllFiles = async()=>{
     if (infoString) {
       info = JSON.parse(infoString);
     }
-  const response =  await fetch('http://localhost:3000/api/files',{
+  const response =  await fetch('https://file-server-main.vercel.app/api/files',{
       method:'GET',
       headers:{
           'Content-type':'application/json',
@@ -160,7 +160,7 @@ postFileBtn.addEventListener('click', async (e) => {
     if (infoString) {
       info = JSON.parse(infoString);
     }
-    const response = await fetch('http://localhost:3000/api/files/upload', {
+    const response = await fetch('https://file-server-main.vercel.app/api/files/upload', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${info?.token}`,
@@ -177,7 +177,7 @@ postFileBtn.addEventListener('click', async (e) => {
     if (infoString) {
       info = JSON.parse(infoString);
     }
-    const response = await fetch(`http://localhost:3000/api/files/${id}`,{
+    const response = await fetch(`https://file-server-main.vercel.app/api/files/${id}`,{
       method:'GET',
       headers:{
         'Content-type':'application/json',
@@ -203,7 +203,7 @@ const logoutFunc = async () =>{
     if(infoString){
        info = JSON.parse(infoString) 
     }
-    const response = await fetch('http://localhost:3000/auth/logout',{
+    const response = await fetch('https://file-server-main.vercel.app/auth/logout',{
         method:'POST',
         headers:{
             'Content-type':'application/json',
@@ -234,7 +234,7 @@ downloadButtons.forEach((button) => {
     // e.preventDefault();
 
     const fileId = button.classList[1];
-    const response = await fetch(`http://localhost:3000/api/files/download/${Number(fileId)}`, {
+    const response = await fetch(`https://file-server-main.vercel.app/api/files/download/${Number(fileId)}`, {
       method: 'GET',
       headers: {
         'Content-type':'application/json',
@@ -298,7 +298,7 @@ function sendFileFunc(){
         user_email :senders_email,
         receipient_email:receipient_email
       }
-      const response = await fetch(`http://localhost:3000/api/files/send/`,{
+      const response = await fetch(`https://file-server-main.vercel.app/api/files/send/`,{
         method:'POST',
         headers: {
           'Content-type':'application/json',
