@@ -20,7 +20,7 @@ app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(express.static('public'));
-app.use('/public/uploads', express.static('public/uploads'));
+
  
 
 app.use(cookieParser())
@@ -35,11 +35,7 @@ app.use('/admin',adminRoutes);
 
 app.use('/api/files',fileRoutes)
 app.use('/',emailRoutes);
-app.get('/',(req:Request,res:Response)=>{
-    res.send(
-       "<h1>Welcome to the File Server<h1/>"
-    )
-})
+
 
 app.listen(PORT,()=>{
     console.log(`Server Running on Port ${PORT}`)
