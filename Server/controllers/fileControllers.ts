@@ -9,8 +9,9 @@ export const getFiles = async(req:Request,res:Response) =>{
         
         const result = await db.query('SELECT * FROM files');
         const files = result.rows.map(file => {
-          file.url = `http://${req.headers.host}/${file.path}`
-          return file
+          const host = req.get('host');
+          file.url = `http://${host}/uploads/${file.path}`;
+          return file;
         });
         console.log(files)
         res.json({ files });
