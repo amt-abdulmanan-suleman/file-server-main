@@ -3,7 +3,7 @@
       {
         "src": "dist/index.js",
         "use": "@vercel/node",
-        "files": ["dist", "uploads/*"]
+        "files": ["dist", "uploads"]
       }
     ],
     "routes": [
