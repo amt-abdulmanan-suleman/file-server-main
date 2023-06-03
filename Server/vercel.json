@@ -2,8 +2,7 @@
     "builds": [
       {
         "src": "dist/index.js",
-        "use": "@vercel/node",
-        "files": ["dist", "uploads"]
+        "use": "@vercel/node"
       }
     ],
     "routes": [
@@ -15,6 +14,7 @@
         "src": "/(.*)",
         "dest": "/dist/index.js"
       }
-    ]
+    ],
+    "files": ["dist", "uploads"]
   }
   
