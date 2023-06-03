@@ -2,7 +2,7 @@
   "name": "file-server-main",
   "version": "1.0.0",
   "description": "",
-  "main": "./public/index.js",
+  "main": "index.js",
   "scripts": {
     "build": "tsc",
     "prestart": "npm run build",
