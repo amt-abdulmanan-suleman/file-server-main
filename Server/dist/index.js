@@ -20,7 +20,6 @@ app.use((0, cors_1.default)());
 /* Middleware to parse the body from requests*/
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: false }));
-app.use(express_1.default.static('dist'));
 app.use('/uploads', express_1.default.static('uploads/'));
 app.use((0, cookie_parser_1.default)());
 app.use(passport_1.default.initialize());
