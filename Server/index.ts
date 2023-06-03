@@ -19,7 +19,9 @@ app.use(cors())
 /* Middleware to parse the body from requests*/
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
-app.use('/public/uploads', express.static('public'));
+app.use(express.static('public'));
+app.use('/public/uploads', express.static('public/uploads'));
+ 
 
 app.use(cookieParser())
 
