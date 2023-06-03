@@ -3,7 +3,6 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser'
 import passport from 'passport';
 import cors from 'cors'
-import path from 'path';
 
 import { PORT } from './config';
 
@@ -21,7 +20,7 @@ app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static('uploads/'));
  
 
 app.use(cookieParser())
