@@ -22,6 +22,7 @@ const getFiles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             file.url = `http://${req.headers.host}/${file.path}`;
             return file;
         });
+        console.log(files);
         res.json({ files });
     }
     catch (error) {

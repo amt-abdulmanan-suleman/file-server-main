@@ -12,6 +12,7 @@ export const getFiles = async(req:Request,res:Response) =>{
           file.url = `http://${req.headers.host}/${file.path}`
           return file
         });
+        console.log(files)
         res.json({ files });
       } catch (error: unknown) {
         if (error instanceof Error) {
