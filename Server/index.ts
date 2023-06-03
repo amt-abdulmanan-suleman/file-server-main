@@ -20,7 +20,7 @@ app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 
-app.use('/dist', express.static('dist'));
+app.use( express.static('dist'));
  
 
 app.use(cookieParser())
