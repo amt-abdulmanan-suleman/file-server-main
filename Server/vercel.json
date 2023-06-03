@@ -3,7 +3,7 @@
       {
         "src": "dist",
         "use": "@vercel/node"
-      },{"src": "uploads","use": "@vercel/node"}
+      }
     ],
     "routes": [
       {
