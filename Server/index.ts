@@ -1,4 +1,4 @@
-import express from 'express';
+import express,{Request,Response} from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser'
 import passport from 'passport';
@@ -33,6 +33,11 @@ app.use('/admin',adminRoutes);
 
 app.use('/api/files',fileRoutes)
 app.use('/',emailRoutes);
+app.get('/',(req:Request,res:Response)=>{
+    res.send(
+       "<h1>Welcome to the File Server<h1/>"
+    )
+})
 
 app.listen(PORT,()=>{
     console.log(`Server Running on Port ${PORT}`)

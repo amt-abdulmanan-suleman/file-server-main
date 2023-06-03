@@ -1,13 +1,14 @@
 import {Pool} from 'pg';
-import { PASSWORD } from '../config';
+import {POSTGRES_URL } from '../config';
 
 
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'file_server',
-    password: PASSWORD,
-    port: 5432,
+    connectionString: POSTGRES_URL + "?sslmode=require",
+})
+
+pool.connect((err)=>{
+    if(err) throw err
+    console.log('Database connected')
 })
 
 export default {
