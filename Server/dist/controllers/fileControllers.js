@@ -13,16 +13,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteFiles = exports.postFile = exports.getFile = exports.sendFile = exports.downloadFile = exports.getFiles = void 0;
+const cloudinary_1 = require("cloudinary");
 const transporter_1 = require("../utils/transporter");
 const db_1 = __importDefault(require("../db"));
 const getFiles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield db_1.default.query('SELECT * FROM files');
-        const files = result.rows.map(file => {
-            file.url = `http://${req.headers.host}/${file.path}`;
+        const files = result.rows.map((file) => {
+            file.url = file.path;
             return file;
         });
-        console.log(files);
+        // console.log(files);
         res.json({ files });
     }
     catch (error) {
@@ -36,12 +37,12 @@ const getFiles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getFiles = getFiles;
 const downloadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const fileId = req.params.id;
-    const query = 'SELECT name, path,no_of_downloads FROM files WHERE id = $1';
+    const query = 'SELECT name, path, no_of_downloads FROM files WHERE id = $1';
     const values = [fileId];
     try {
         const result = yield db_1.default.query(query, values);
         const file = result.rows[0];
-        yield db_1.default.query('update files set no_of_downloads = $1 where id = $2', [file.no_of_downloads + 1, fileId]);
+        yield db_1.default.query('UPDATE files SET no_of_downloads = $1 WHERE id = $2', [file.no_of_downloads + 1, fileId]);
         res.download(file.path);
     }
     catch (error) {
@@ -55,12 +56,13 @@ const downloadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.downloadFile = downloadFile;
 const sendFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { fileId, user_email, receipient_email } = req.body;
+    console.log(user_email, receipient_email);
     const query = 'SELECT * FROM files WHERE id = $1';
     const values = [fileId];
     try {
         const result = yield db_1.default.query(query, values);
         const file = result.rows[0];
-        const filePath = file.path;
+        console.log(file);
         const mailOptions = {
             from: user_email,
             to: receipient_email,
@@ -68,11 +70,11 @@ const sendFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             attachments: [
                 {
                     filename: file.name,
-                    path: filePath,
+                    path: file.path,
                 },
             ],
         };
-        yield db_1.default.query('update files set no_of_sent = $1 where id = $2', [file.no_of_sent + 1, fileId]);
+        yield db_1.default.query('UPDATE files SET no_of_sent = $1 WHERE id = $2', [file.no_of_sent + 1, fileId]);
         transporter_1.transporter.sendMail(mailOptions, (err, info) => {
             if (err) {
                 console.error(err);
@@ -96,10 +98,10 @@ exports.sendFile = sendFile;
 const getFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const { rows } = yield db_1.default.query('select * from files where id=$1', [id]);
+        const { rows } = yield db_1.default.query('SELECT * FROM files WHERE id = $1', [id]);
         res.status(200).json({
             success: true,
-            file: rows[0]
+            file: rows[0],
         });
     }
     catch (error) {
@@ -117,32 +119,48 @@ const postFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!file) {
         return res.status(400).json({ error: "File not provided" });
     }
-    const query = 'INSERT INTO files (name, path, mimetype, user_id, no_of_downloads, no_of_sent,description) VALUES ($1, $2, $3, $4, $5, $6,$7) RETURNING name';
-    const values = [title[0], file.path, file.mimetype, id, 0, 0, desc[0]];
-    try {
-        const { rows } = yield db_1.default.query(query, values);
-        res.status(200).json({
-            id: rows[0].id,
-            success: true,
-            message: `File uploaded successfully. name: ${rows[0].name});`
-        });
-    }
-    catch (error) {
-        if (error instanceof Error) {
-            return res.status(500).json({
-                error: error.message,
+    console.log(file);
+    const processUploadResult = (result) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log('Cloudinary result:', result);
+        const query = 'INSERT INTO files (name, path, mimetype, user_id, no_of_downloads, no_of_sent, description) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING name';
+        const values = [title[0], result.secure_url, file.mimetype, id, 0, 0, desc[0]];
+        try {
+            const { rows } = yield db_1.default.query(query, values);
+            res.status(200).json({
+                id: rows[0].id,
+                success: true,
+                message: `File uploaded successfully. name: ${rows[0].name}`,
             });
         }
-    }
+        catch (error) {
+            if (error instanceof Error) {
+                return res.status(500).json({
+                    error: error.message,
+                });
+            }
+        }
+    });
+    cloudinary_1.v2.uploader.upload(file.path, { public_id: file.filename }, (error, result) => {
+        if (error) {
+            console.log('Error:', error);
+            return res.status(500).json({ error: 'Something went wrong during file upload.' });
+        }
+        if (result) {
+            processUploadResult(result);
+        }
+        else {
+            console.log('Something went wrong');
+        }
+    });
 });
 exports.postFile = postFile;
 const deleteFiles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        yield db_1.default.query('delete from files where id=$1', [id]);
+        yield db_1.default.query('DELETE FROM files WHERE id = $1', [id]);
         res.status(200).json({
             success: true,
-            message: `File with id ${id} deleted`
+            message: `File with id ${id} deleted`,
         });
     }
     catch (error) {
