@@ -201,11 +201,13 @@ postFileBtn.addEventListener('click', function (e) { return __awaiter(_this, voi
                 console.log(file);
                 element = fileDisplay(file);
                 mainSection.insertAdjacentHTML('beforeend', element);
+                window.location.reload();
                 _a.label = 3;
             case 3: return [2 /*return*/];
         }
     });
 }); });
+var boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW';
 var postFunc = function (formData) { return __awaiter(_this, void 0, void 0, function () {
     var info, response, data;
     return __generator(this, function (_a) {
@@ -439,7 +441,7 @@ function fileDisplay(files) {
             fileContent = "<img width='100%' height='100%' src=\"".concat(file.url, "\" alt=\"").concat(file.name, "\">");
         }
         else if (file.mimetype === 'application/pdf') {
-            fileContent = "<iframe width='100%' height='100%' src=\"".concat(file.url, "\" frameborder=\"0\"></iframe>");
+            fileContent = "<embed src=\"".concat(file.url, "\" type=\"application/pdf\" width=\"100%\" height=\"100%\">\n        ");
         }
         else if (file.mimetype.startsWith('video/')) {
             fileContent = "<video width='100%' height='100%' src=\"".concat(file.url, "\"></video>");

@@ -23,11 +23,11 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage: storage });
 
 async function determineFormat(file: Express.Multer.File): Promise<string> {
-  if (file.mimetype.includes('image')) {
+  if (file.mimetype.startsWith('image/')) {
     return 'png';
-  } else if (file.mimetype.includes('video')) {
+  } else if (file.mimetype.startsWith('video/') ) {
     return 'mp4';
-  } else if (file.mimetype.includes('pdf')) {
+  } else if (file.mimetype === "application/pdf") {
     return 'pdf';
   }
   throw new Error('Invalid file type');

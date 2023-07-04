@@ -150,11 +150,13 @@ postFileBtn.addEventListener('click', async (e) => {
       console.log(file)
       const element = fileDisplay(file);
       mainSection.insertAdjacentHTML('beforeend', element);
+      window.location.reload();
     }
 
   });
   
-
+  const boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW';
+  
   const postFunc = async (formData:FormData) => {
     let info;
     if (infoString) {
@@ -380,7 +382,8 @@ fileInput.addEventListener("change", (e) => {
       if (file.mimetype.startsWith('image/')) {
         fileContent = `<img width='100%' height='100%' src="${file.url}" alt="${file.name}">`;
       } else if (file.mimetype === 'application/pdf') {
-        fileContent = `<iframe width='100%' height='100%' src="${file.url}" frameborder="0"></iframe>`;
+        fileContent = `<embed src="${file.url}" type="application/pdf" width="100%" height="100%">
+        `;
       } else if (file.mimetype.startsWith('video/')) {
         fileContent = `<video width='100%' height='100%' src="${file.url}"></video>`;
       }

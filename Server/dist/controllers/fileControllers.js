@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteFiles = exports.postFile = exports.getFile = exports.sendFile = exports.downloadFile = exports.getFiles = void 0;
+const axios_1 = __importDefault(require("axios"));
 const cloudinary_1 = require("cloudinary");
 const transporter_1 = require("../utils/transporter");
 const db_1 = __importDefault(require("../db"));
@@ -43,7 +44,14 @@ const downloadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const result = yield db_1.default.query(query, values);
         const file = result.rows[0];
         yield db_1.default.query('UPDATE files SET no_of_downloads = $1 WHERE id = $2', [file.no_of_downloads + 1, fileId]);
-        res.download(file.path);
+        // Download the file from the URL
+        const response = yield axios_1.default.get(file.path, { responseType: 'arraybuffer' });
+        // Set the appropriate content type based on the file type
+        const contentType = getContentType(file.path);
+        // Send the file to the client as a download
+        res.set('Content-Type', contentType);
+        res.set('Content-Disposition', `attachment; filename="${file.name}"`);
+        res.send(response.data);
     }
     catch (error) {
         if (error instanceof Error) {
@@ -54,6 +62,20 @@ const downloadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.downloadFile = downloadFile;
+// Helper function to get the content type based on the file URL
+function getContentType(url) {
+    const extension = url.split('.').pop();
+    if (extension === 'png' || extension === 'jpg' || extension === 'jpeg' || extension === 'gif') {
+        return 'image/png';
+    }
+    else if (extension === 'mp4' || extension === 'avi' || extension === 'mkv') {
+        return 'video/mp4';
+    }
+    else if (extension === 'pdf') {
+        return 'application/pdf';
+    }
+    return 'application/octet-stream';
+}
 const sendFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { fileId, user_email, receipient_email } = req.body;
     console.log(user_email, receipient_email);
@@ -67,12 +89,27 @@ const sendFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             from: user_email,
             to: receipient_email,
             subject: 'File Attachment',
-            attachments: [
-                {
-                    filename: file.name,
-                    path: file.path,
-                },
-            ],
+            html: `
+        <html>
+          <body>
+            <h1>Embedded Media</h1>
+            ${file.mimetype.startsWith('image/') ? `<img src="${file.path}" alt="Image" />` : ''}
+            <br/>
+            ${file.mimetype.startsWith('video/') ? `
+              <video width="320" height="240" controls>
+                <source src="${file.path}" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            ` : ''}
+            <br/>
+            ${file.mimetype === "application/pdf" ? `
+              <embed src="${file.path}" type="application/pdf" width="100%" height="600px" />
+            ` : ''}
+            <br/>
+            <a href="${file.path}" download>Download File</a>
+          </body>
+        </html>
+      `,
         };
         yield db_1.default.query('UPDATE files SET no_of_sent = $1 WHERE id = $2', [file.no_of_sent + 1, fileId]);
         transporter_1.transporter.sendMail(mailOptions, (err, info) => {
@@ -122,7 +159,7 @@ const postFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(file);
     const processUploadResult = (result) => __awaiter(void 0, void 0, void 0, function* () {
         console.log('Cloudinary result:', result);
-        const query = 'INSERT INTO files (name, path, mimetype, user_id, no_of_downloads, no_of_sent, description) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING name';
+        const query = 'INSERT INTO files (name, path, mimetype, user_id, no_of_downloads, no_of_sent, description) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING name,id';
         const values = [title[0], result.secure_url, file.mimetype, id, 0, 0, desc[0]];
         try {
             const { rows } = yield db_1.default.query(query, values);
