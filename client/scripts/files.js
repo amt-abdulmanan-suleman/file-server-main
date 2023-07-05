@@ -70,7 +70,7 @@ var getAllFiles = function () { return __awaiter(_this, void 0, void 0, function
                 if (infoString) {
                     info = JSON.parse(infoString);
                 }
-                return [4 /*yield*/, fetch('http://localhost:3000/api/files', {
+                return [4 /*yield*/, fetch('https://file-server-main.vercel.app/api/files', {
                         method: 'GET',
                         headers: {
                             'Content-type': 'application/json',
@@ -214,7 +214,7 @@ var postFunc = function (formData) { return __awaiter(_this, void 0, void 0, fun
                 if (infoString) {
                     info = JSON.parse(infoString);
                 }
-                return [4 /*yield*/, fetch('http://localhost:3000/api/files/upload', {
+                return [4 /*yield*/, fetch('https://file-server-main.vercel.app/api/files/upload', {
                         method: 'POST',
                         headers: {
                             Authorization: "Bearer ".concat(info === null || info === void 0 ? void 0 : info.token)
@@ -238,7 +238,7 @@ var getFile = function (id) { return __awaiter(_this, void 0, void 0, function (
                 if (infoString) {
                     info = JSON.parse(infoString);
                 }
-                return [4 /*yield*/, fetch("http://localhost:3000/api/files/".concat(id), {
+                return [4 /*yield*/, fetch("https://file-server-main.vercel.app/api/files/".concat(id), {
                         method: 'GET',
                         headers: {
                             'Content-type': 'application/json',
@@ -266,7 +266,7 @@ var logoutFunc = function () { return __awaiter(_this, void 0, void 0, function 
                 if (infoString) {
                     info = JSON.parse(infoString);
                 }
-                return [4 /*yield*/, fetch('http://localhost:3000/auth/logout', {
+                return [4 /*yield*/, fetch('https://file-server-main.vercel.app/auth/logout', {
                         method: 'POST',
                         headers: {
                             'Content-type': 'application/json',
@@ -302,7 +302,7 @@ function downloadFunc() {
                 switch (_a.label) {
                     case 0:
                         fileId = button.classList[1];
-                        return [4 /*yield*/, fetch("http://localhost:3000/api/files/download/".concat(Number(fileId)), {
+                        return [4 /*yield*/, fetch("https://file-server-main.vercel.app/api/files/download/".concat(Number(fileId)), {
                                 method: 'GET',
                                 headers: {
                                     'Content-type': 'application/json',
@@ -371,7 +371,7 @@ function sendFileFunc() {
                             receipient_email: receipient_email
                         };
                         console.log(data);
-                        return [4 /*yield*/, fetch("http://localhost:3000/api/files/send/", {
+                        return [4 /*yield*/, fetch("https://file-server-main.vercel.app/api/files/send/", {
                                 method: 'POST',
                                 headers: {
                                     'Content-type': 'application/json',

@@ -15,13 +15,13 @@ import './middlewares/passport-middleware'
 
 const app = express();
 
-app.use(cors())
+app.use(cors());
 /* Middleware to parse the body from requests*/
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({limit: '10mb',extended:false}));
 app.use(express.static('uploads'))
 app.use('/uploads', express.static('uploads'));
- 
+app.use(express.json());
 
 app.use(cookieParser())
 

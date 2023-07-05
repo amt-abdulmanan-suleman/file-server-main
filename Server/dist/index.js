@@ -22,6 +22,7 @@ app.use(body_parser_1.default.json({ limit: '10mb' }));
 app.use(body_parser_1.default.urlencoded({ limit: '10mb', extended: false }));
 app.use(express_1.default.static('uploads'));
 app.use('/uploads', express_1.default.static('uploads'));
+app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
 app.use(passport_1.default.initialize());
 app.use('/auth', authRoutes_1.default);
