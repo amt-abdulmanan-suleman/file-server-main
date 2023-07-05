@@ -20,7 +20,7 @@ const searchInput = document.querySelector('#search') as HTMLInputElement;
 
 const infoString = localStorage.getItem('profile');
 if(!infoString){
-  window.location.href = 'http://127.0.0.1:5500/client/index.html'
+  window.location.href = 'https://client-dun-pi.vercel.app'
 }
 let info;
 if(infoString){
@@ -97,7 +97,7 @@ LogoutBtn.addEventListener('click',async(e)=>{
 
     if(data.success){
         localStorage.removeItem('profile');
-        window.location.href = 'http://127.0.0.1:5500/client/index.html';
+        window.location.href = 'https://client-dun-pi.vercel.app';
     }else{
         console.log('error')
     }

@@ -36,7 +36,7 @@ const confirmPasswordInput = document.querySelector('#confirm-password') as HTML
 const forgotPasswordBtn = document.querySelector('.forgot') as HTMLParagraphElement
 
 if(LoggedIn){
-    window.location.href = 'http://127.0.0.1:5500/client/filesPage.html'
+    window.location.href = 'https://client-dun-pi.vercel.app/filesPage.html'
 }
 
 interface User {
@@ -60,7 +60,7 @@ interface Err {
 
 const registerFunc = async(user:User) =>{
     
-    const response = await fetch('http://localhost:3000/auth/signup',{
+    const response = await fetch('https://file-server-main.vercel.app/auth/signup',{
         method: 'POST',
         headers:{
             'Content-type':'application/json'
@@ -72,7 +72,7 @@ const registerFunc = async(user:User) =>{
 
 
 const verifyFunc = async(token:string) =>{
-    const response = await fetch(`http://localhost:3000/verify-email/${token}`,{
+    const response = await fetch(`https://file-server-main.vercel.app/verify-email/${token}`,{
         method: 'POST',
         headers:{
             'Content-type':'application/json'
@@ -82,7 +82,7 @@ const verifyFunc = async(token:string) =>{
 }
 
 const loginFunc = async(cred:Credentials)=>{
-    const response = await fetch(`http://localhost:3000/auth/login`,{
+    const response = await fetch(`https://file-server-main.vercel.app/auth/login`,{
         method: 'POST',
         headers:{
             'Content-type':'application/json'
@@ -94,7 +94,7 @@ const loginFunc = async(cred:Credentials)=>{
 
 const receiveResetTokenFunc = async(email:string) =>{
     
-    const response = await fetch('http://localhost:3000/auth/reset-token',{
+    const response = await fetch('https://file-server-main.vercel.app/auth/reset-token',{
         method: 'POST',
         headers:{
             'Content-type':'application/json'
@@ -108,7 +108,7 @@ const receiveResetTokenFunc = async(email:string) =>{
 
 
 const resetPasswordFunc = async(password:string,id:string) => {
-    const response = await fetch(`http://localhost:3000/auth/reset-password/${id}`,{
+    const response = await fetch(`https://file-server-main.vercel.app/auth/reset-password/${id}`,{
         method: 'POST',
         headers:{
             'Content-type':'application/json'
@@ -142,7 +142,7 @@ function errorDisplay(errArray:Err[]){
 
 
 const getUser = async(id:string) =>{
-    const response = await fetch(`http://localhost:3000/user/${id}`,{
+    const response = await fetch(`https://file-server-main.vercel.app/user/${id}`,{
         method:'GET',
         headers:{
             'Content-type':'application/json'
@@ -205,7 +205,7 @@ loginBtn.addEventListener('click',async(e)=>{
         const info = {user:user,token:data.token}
         const infoString = JSON.stringify(info);
         localStorage.setItem('profile', infoString);
-        window.location.href = 'http://127.0.0.1:5500/client/filesPage.html'
+        window.location.href = 'https://client-dun-pi.vercel.app/filesPage.html'
     }else{
          // create a new <ul> element
         errorList.innerHTML = errorDisplay(data.errors);

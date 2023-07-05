@@ -48,7 +48,7 @@ var downloadBtn = document.querySelector('.download');
 var searchInput = document.querySelector('#search');
 var infoString = localStorage.getItem('profile');
 if (!infoString) {
-    window.location.href = 'http://127.0.0.1:5500/client/index.html';
+    window.location.href = 'https://client-dun-pi.vercel.app';
 }
 var info;
 if (infoString) {
@@ -142,7 +142,7 @@ LogoutBtn.addEventListener('click', function (e) { return __awaiter(_this, void 
                 data = _a.sent();
                 if (data.success) {
                     localStorage.removeItem('profile');
-                    window.location.href = 'http://127.0.0.1:5500/client/index.html';
+                    window.location.href = 'https://client-dun-pi.vercel.app';
                 }
                 else {
                     console.log('error');
