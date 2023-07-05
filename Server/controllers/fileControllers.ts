@@ -80,7 +80,8 @@ export const sendFile = async (req: Request, res: Response) => {
       html: `
         <html>
           <body>
-            <h1>Embedded Media</h1>
+            <h1>${file.title}</h1>
+            <p>${file.desc}</p>
             ${file.mimetype.startsWith('image/') ? `<img src="${file.path}" alt="Image" />` : ''}
             <br/>
             ${file.mimetype.startsWith('video/') ? `
