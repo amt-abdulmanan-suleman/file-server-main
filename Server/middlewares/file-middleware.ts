@@ -25,7 +25,7 @@ const upload = multer({ storage: storage });
 async function determineFormat(file: Express.Multer.File): Promise<string> {
   if (file.mimetype.startsWith('image/')) {
     return 'png';
-  } else if (file.mimetype.startsWith('video/') ) {
+  } else if (file.mimetype.startsWith('video/')) {
     return 'mp4';
   } else if (file.mimetype === "application/pdf") {
     return 'pdf';

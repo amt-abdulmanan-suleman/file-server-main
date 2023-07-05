@@ -145,13 +145,13 @@ export const postFile = async (req: Request, res: Response) => {
     return res.status(400).json({ error: "File not provided" });
   }
   
-  console.log(file);
+  console.log("first")
 
   const processUploadResult = async (result:any) => {
-    console.log('Cloudinary result:', result);
-  
+    console.log('second')
+    
     const query = 'INSERT INTO files (name, path, mimetype, user_id, no_of_downloads, no_of_sent, description) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING name,id';
-    const values = [title[0], result.secure_url, file.mimetype, id, 0, 0, desc[0]];
+    const values = [title, result.secure_url, file.mimetype, id, 0, 0, desc];
   
     try {
       const { rows } = await db.query(query, values);
@@ -168,23 +168,33 @@ export const postFile = async (req: Request, res: Response) => {
       }
     }
   };
-  
-  cloudinary.uploader.upload(
-    file.path,
-    { public_id: file.filename },
-    (error, result) => {
-      if (error) {
-        console.log('Error:', error);
-        return res.status(500).json({ error: 'Something went wrong during file upload.' });
+  if (file.mimetype.startsWith('video/')){
+    cloudinary.uploader
+    .upload(file.path, 
+      { resource_type: "video", 
+        public_id: file.filename,
+        chunk_size: 6000000,
+     })
+    .then(result=>console.log(result));
+  } else{
+    cloudinary.uploader.upload(
+      file.path,
+      { public_id: file.filename },
+      (error, result) => {
+        if (error) {
+          
+          return res.status(500).json({ error: 'Something went wrong during file upload.' });
+        }
+    
+        if (result) {
+          processUploadResult(result);
+        } else {
+          console.log('Something went wrong');
+        }
       }
+    );
+  }
   
-      if (result) {
-        processUploadResult(result);
-      } else {
-        console.log('Something went wrong');
-      }
-    }
-  );
 };
 
 export const deleteFiles = async (req: Request, res: Response) => {

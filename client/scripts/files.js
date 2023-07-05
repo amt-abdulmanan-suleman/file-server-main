@@ -170,17 +170,17 @@ postBtn.addEventListener('click', function () {
     mainSection.classList.add('accessibility');
 });
 postFileBtn.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
-    var form, desc, titleInput, formData, info, id, user, data, file, element;
+    var form, formData, info, id, user, data, file, element;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 e.preventDefault();
                 form = document.querySelector('#file-form');
-                desc = document.querySelector('#desc');
-                titleInput = document.querySelector('#title');
                 formData = new FormData(form);
+                console.log(formData);
                 if (fileInput.files && fileInput.files[0]) {
                     formData.set('file', fileInput.files[0]);
+                    console.log(formData);
                 }
                 if (infoString) {
                     info = JSON.parse(infoString);
@@ -188,8 +188,6 @@ postFileBtn.addEventListener('click', function (e) { return __awaiter(_this, voi
                     id = user.user.id;
                 }
                 formData.append('id', id);
-                formData.append('desc', desc.value);
-                formData.append('title', titleInput.value);
                 return [4 /*yield*/, postFunc(formData)];
             case 1:
                 data = _a.sent();

@@ -124,12 +124,11 @@ postBtn.addEventListener('click',()=>{
 postFileBtn.addEventListener('click', async (e) => {
     e.preventDefault();
     const form = document.querySelector('#file-form') as HTMLFormElement;
-    const desc = document.querySelector('#desc') as HTMLTextAreaElement;
-    const titleInput = document.querySelector('#title') as HTMLInputElement
     const formData = new FormData(form);
-    
+    console.log(formData)
     if (fileInput.files && fileInput.files[0]) {
       formData.set('file', fileInput.files[0]);
+      console.log(formData)
     }
     let info;
     let id;
@@ -140,8 +139,7 @@ postFileBtn.addEventListener('click', async (e) => {
     }
     
     formData.append('id',id)
-    formData.append('desc',desc.value)
-    formData.append('title',titleInput.value)
+    
     
     const data = await postFunc(formData);
     console.log(data)
